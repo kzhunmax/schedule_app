@@ -10,6 +10,7 @@ from models import Lesson
 from ui.lesson_dialog import LessonDialog
 from utils import export_to_csv, export_to_json, import_from_csv, import_from_json
 from settings import save_theme, load_theme
+from ui.settings_dialog import SettingsDialog
 
 
 class MainWindow(QMainWindow):
@@ -67,19 +68,15 @@ class MainWindow(QMainWindow):
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(["Subject", "Time", "Type", "Room", "Action"])
         self.table.horizontalHeader().setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.table.verticalHeader().setVisible(False)
+        self.table.setSortingEnabled(False)
 
-        # Settings Button
-        self.settings_btn = QPushButton()
-        self.settings_btn.setIcon(QIcon("images/icons/cil-settings.png"))
-        self.settings_btn.setToolTip("Settings")
-        self.settings_btn.setFixedSize(40, 40)
-
-        # Theme Toggle Button
-        self.theme_btn = QPushButton()
-        self.theme_btn.setToolTip("Theme")
-        self.theme_btn.setFixedSize(40, 40)
-        self.theme_btn.clicked.connect(self.toggle_theme)
-        self.update_theme_button_icon()
+        # Optional: Set column widths
+        self.table.setColumnWidth(0, 200)  # Subject
+        self.table.setColumnWidth(1, 80)  # Time
+        self.table.setColumnWidth(2, 100)  # Type
+        self.table.setColumnWidth(3, 100)  # Room
+        self.table.setColumnWidth(4, 60)  # Action
 
         # Buttons
         btn_layout = QHBoxLayout()
@@ -99,6 +96,7 @@ class MainWindow(QMainWindow):
         export_json_btn.clicked.connect(self.export_to_json)
         import_csv_btn.clicked.connect(self.import_from_csv)
         import_json_btn.clicked.connect(self.import_from_json)
+        self.settings_btn.clicked.connect(self.open_settings)
 
         btn_layout.addWidget(add_btn)
         btn_layout.addWidget(edit_btn)
@@ -126,6 +124,7 @@ class MainWindow(QMainWindow):
         conn.close()
 
         self.table.setRowCount(len(rows))
+
         for i, row in enumerate(rows):
             lesson = Lesson(*row)
             self.table.setItem(i, 0, QTableWidgetItem(lesson.subject))
@@ -135,7 +134,7 @@ class MainWindow(QMainWindow):
 
             delete_button = QPushButton("❌")
             delete_button.setStyleSheet("padding: 4px;")
-            delete_button.clicked.connect(lambda _, r=i, lid=lesson.id: self.delete_row(lid))  # type: ignore
+            delete_button.clicked.connect(lambda _, lid=lesson.id: self.delete_row(lid))
             self.table.setCellWidget(i, 4, delete_button)
 
     def add_lesson(self):
@@ -268,9 +267,8 @@ class MainWindow(QMainWindow):
 
     def load_current_theme(self):
         current_theme = load_theme()
-        qss_file = f"styles/{current_theme}.qss"
         try:
-            with open(qss_file, "r") as f:
+            with open(f"styles/{current_theme}.qss", "r") as f:
                 self.setStyleSheet(f.read())
         except Exception as e:
             print("An error has occurred while loading theme:", e)
@@ -281,3 +279,7 @@ class MainWindow(QMainWindow):
         save_theme(new_theme)
         self.load_current_theme()
         self.update_theme_button_icon()
+
+    def open_settings(self):
+        dialog = SettingsDialog(parent=self)
+        dialog.exec()

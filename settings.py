@@ -1,9 +1,22 @@
 from PyQt6.QtCore import QSettings
 
-Settings = QSettings("MyUniversity", "SchedulePlanner")
+SETTINGS = QSettings("MyUniversity", "SchedulePlanner")
 
 def save_theme(theme_name):
-    Settings.setValue("app_theme", theme_name)
+    SETTINGS.setValue("app_theme", theme_name)
 
 def load_theme():
-    return Settings.value("app_theme", "dark_theme")
+    return SETTINGS.value("app_theme", "dark_theme")
+
+def save_language(lang):
+    SETTINGS.setValue("language", lang)
+
+def load_language():
+    return SETTINGS.value("language", "en")
+
+def save_notifications(enabled):
+    SETTINGS.setValue("notifications", enabled)
+
+def load_notifications():
+    return SETTINGS.value("notifications", True, type=bool)
+
