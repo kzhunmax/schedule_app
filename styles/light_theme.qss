@@ -75,11 +75,20 @@ QScrollBar::add-page, QScrollBar::sub-page {
     background-color: none;
 }
 
-/*QListWidget {
-    background-color: #f0f0f0;
-    border-right: 1px solid #ccc;
+QPushButton#sidebarButton {
+    background-color: #303030;
+    border-radius: 6px;
+    padding: 8px;
+    color: #ffffff;
+    border: none;
+    text-align: left;
+    padding-left: 40px;
 }
 
-QListWidget::item:selected {
-    background-color: #d0d0d0;
-}*/
+QPushButton#sidebarButton:hover {
+    background-color: #454545;
+}
+
+QPushButton#sidebarButton:pressed {
+    background-color: #5a5a5a;
+}

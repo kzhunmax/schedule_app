@@ -1,222 +1,163 @@
 import sqlite3
-import os
 from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QTableWidget, QTableWidgetItem, QLabel, QComboBox
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QFrame, QToolButton
 )
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
 from database import DB_PATH
 from models import Lesson
 from ui.lesson_dialog import LessonDialog
 from utils import export_to_csv, export_to_json, import_from_csv, import_from_json
-from settings import save_theme, load_theme
+from settings import save_theme, load_theme, load_language
 from ui.settings_dialog import SettingsDialog
+from ui.schedule_view import ScheduleView
+from language import set_language, tr, load_translations
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Schedule Planner")
-        self.setGeometry(100, 100, 800, 600)
-        with open("styles/dark_theme.qss", "r") as f:
-            self.setStyleSheet(f.read())
-
-        # Load theme
+        self.setGeometry(100, 100, 1200, 700)
         self.load_current_theme()
+        self.setWindowIcon(QIcon("images/icon.png"))
 
-        # Icon of program
-        icon_path = os.path.join(os.path.dirname(__file__), "..", "images", "icon.png")
-        self.setWindowIcon(QIcon(icon_path))
+        load_translations()
 
-        # Initialize UI
+        # Порядок мов і їх коди
+        self.languages = [("English", "en"), ("Українська", "ukr"), ("Polska", "pl")]
+        self.current_language_index = self.load_language_index()
+
         self.init_ui()
-        self.load_table()
+        self.load_lessons()
 
     def init_ui(self):
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
+        main_layout = QHBoxLayout(main_widget)
+        main_layout.setContentsMargins(5, 5, 5, 5)
+        main_layout.setSpacing(5)
 
-        # Top Toolbar (settings + theme buttons)
-        toolbar = QHBoxLayout()
-        toolbar.setContentsMargins(10, 5, 10, 5)
+        self.schedule_view = ScheduleView()
 
-        self.settings_btn = QPushButton()
-        self.settings_btn.setIcon(QIcon("images/icons/cil-settings.png"))
-        self.settings_btn.setToolTip("Settings")
-        self.settings_btn.setFixedSize(40, 40)
+        sidebar = QVBoxLayout()
+        sidebar.setAlignment(Qt.AlignmentFlag.AlignTop)
+        sidebar.setSpacing(5)
 
-        self.theme_btn = QPushButton()
+        # Кнопка перемикання мови
+        self.language_button = QToolButton()
+        self.language_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.language_button.setFixedHeight(40)
+        self.language_button.setObjectName("sidebarButton")
+        self.language_button.setIcon(QIcon("images/icon.png"))
+        self.language_button.clicked.connect(self.cycle_language)
+        sidebar.addWidget(self.language_button)
+
+        lang_name, _ = self.languages[self.current_language_index]
+        self.language_button.setText(lang_name)
+
+        # Кнопки бічної панелі
+        self.theme_btn = self.create_sidebar_button("", "cil-lightbulb.png", self.toggle_theme)
+        self.add_btn = self.create_sidebar_button("", "cil-plus.png", self.add_lesson)
+        self.export_schedule = self.create_sidebar_button("", "cil-level-up.png", self.export_to_csv)
+        self.import_schedule = self.create_sidebar_button("", "cil-level-down.png", self.import_from_csv)
+        self.settings_btn = self.create_sidebar_button("", "cil-settings.png", self.open_settings)
+
+        for btn in [self.theme_btn, self.add_btn, self.export_schedule, self.import_schedule, self.settings_btn]:
+            sidebar.addWidget(btn)
+
+        sidebar_frame = QFrame()
+        sidebar_frame.setLayout(sidebar)
+        sidebar_frame.setFixedWidth(200)
+        sidebar_frame.setFrameShape(QFrame.Shape.StyledPanel)
+
+        right_frame = QFrame()
+        right_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        right_layout = QVBoxLayout(right_frame)
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.addWidget(self.schedule_view)
+
+        main_layout.addWidget(sidebar_frame)
+        main_layout.addWidget(right_frame)
+        main_layout.setStretch(1, 1)
+
         self.update_theme_button_icon()
-        self.theme_btn.setToolTip("Toggle Theme")
-        self.theme_btn.setFixedSize(40, 40)
-        self.theme_btn.clicked.connect(self.toggle_theme)
+        self.update_ui_texts()
 
-        toolbar.addWidget(self.settings_btn)
-        toolbar.addWidget(self.theme_btn)
-        toolbar.addStretch()
+    def create_sidebar_button(self, text, icon_name, callback):
+        btn = QToolButton()
+        btn.setIcon(QIcon(f"images/icons/{icon_name}"))
+        btn.setText(text)
+        btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        btn.setObjectName("sidebarButton")
+        btn.setFixedHeight(40)
+        btn.clicked.connect(callback)
+        return btn
 
-        # Day selector
-        top_layout = QHBoxLayout()
-        self.day_combo = QComboBox()
-        self.day_combo.addItems(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
-        self.day_combo.currentIndexChanged.connect(self.load_table)
-        top_layout.addWidget(QLabel("Choose day:"))
-        top_layout.addWidget(self.day_combo)
+    def load_language_index(self):
+        saved_lang = load_language()
+        for i, (_, code) in enumerate(self.languages):
+            if code == saved_lang:
+                return i
+        return 0
 
-        # Table setup
-        self.table = QTableWidget()
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["Subject", "Time", "Type", "Room", "Action"])
-        self.table.horizontalHeader().setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        self.table.verticalHeader().setVisible(False)
-        self.table.setSortingEnabled(False)
+    def cycle_language(self):
+        self.current_language_index = (self.current_language_index + 1) % len(self.languages)
+        _, lang_code = self.languages[self.current_language_index]
+        set_language(lang_code)  # наприклад, змінюємо глобальну мову
+        self.language_button.setText(_)  # оновлюємо текст кнопки
+        self.update_ui_texts()  # оновлюємо всі елементи інтерфейсу
 
-        # Optional: Set column widths
-        self.table.setColumnWidth(0, 200)  # Subject
-        self.table.setColumnWidth(1, 80)  # Time
-        self.table.setColumnWidth(2, 100)  # Type
-        self.table.setColumnWidth(3, 100)  # Room
-        self.table.setColumnWidth(4, 60)  # Action
+    def update_ui_texts(self):
+        self.setWindowTitle(tr("app.title"))
+        self.theme_btn.setText(tr("app.buttons.theme"))
+        self.add_btn.setText(tr("app.buttons.add"))
+        self.export_schedule.setText(tr("app.buttons.export_csv"))
+        self.import_schedule.setText(tr("app.buttons.import_csv"))
+        self.settings_btn.setText(tr("app.buttons.settings"))
 
-        # Buttons
-        btn_layout = QHBoxLayout()
-        add_btn = QPushButton("➕ Add")
-        edit_btn = QPushButton("✏️ Edit")
-        del_btn = QPushButton("🗑️ Delete")
-        export_csv_btn = QPushButton("📁 CSV Export")
-        export_json_btn = QPushButton("📦 JSON Export")
-        import_csv_btn = QPushButton("📥 CSV Import")
-        import_json_btn = QPushButton("📥 JSON Import")
-
-        # Connect signals
-        add_btn.clicked.connect(self.add_lesson)
-        edit_btn.clicked.connect(self.edit_lesson)
-        del_btn.clicked.connect(self.delete_lesson)
-        export_csv_btn.clicked.connect(self.export_to_csv)
-        export_json_btn.clicked.connect(self.export_to_json)
-        import_csv_btn.clicked.connect(self.import_from_csv)
-        import_json_btn.clicked.connect(self.import_from_json)
-        self.settings_btn.clicked.connect(self.open_settings)
-
-        btn_layout.addWidget(add_btn)
-        btn_layout.addWidget(edit_btn)
-        btn_layout.addWidget(del_btn)
-        btn_layout.addWidget(export_csv_btn)
-        btn_layout.addWidget(export_json_btn)
-        btn_layout.addWidget(import_csv_btn)
-        btn_layout.addWidget(import_json_btn)
-
-        # Main layout
-        layout = QVBoxLayout()
-        layout.addLayout(toolbar)
-        layout.addLayout(top_layout)
-        layout.addWidget(self.table)
-        layout.addLayout(btn_layout)
-
-        main_widget.setLayout(layout)
-
-    def load_table(self):
-        day = self.day_combo.currentText()
+    def load_lessons(self):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons WHERE day=?", (day,))
+        cursor.execute("SELECT * FROM lessons ORDER BY day, start_time")  # Add sorting
         rows = cursor.fetchall()
         conn.close()
 
-        self.table.setRowCount(len(rows))
-
-        for i, row in enumerate(rows):
-            lesson = Lesson(*row)
-            self.table.setItem(i, 0, QTableWidgetItem(lesson.subject))
-            self.table.setItem(i, 1, QTableWidgetItem(lesson.time))
-            self.table.setItem(i, 2, QTableWidgetItem(lesson.type))
-            self.table.setItem(i, 3, QTableWidgetItem(lesson.room))
-
-            delete_button = QPushButton("❌")
-            delete_button.setStyleSheet("padding: 4px;")
-            delete_button.clicked.connect(lambda _, lid=lesson.id: self.delete_row(lid))
-            self.table.setCellWidget(i, 4, delete_button)
+        lessons = [Lesson(*row) for row in rows]
+        self.schedule_view.set_lessons(lessons)
 
     def add_lesson(self):
         dialog = LessonDialog(parent=self)
         if dialog.exec() == LessonDialog.DialogCode.Accepted:
             lesson = dialog.get_data()
-            conn = sqlite3.connect(DB_PATH)
+            conn = sqlite3.connect('data/schedule.db')
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO lessons (day, subject, time, type, room)
-                VALUES (?, ?, ?, ?, ?)
-            """, (lesson.day, lesson.subject, lesson.time, lesson.type, lesson.room))
+                    INSERT INTO lessons (day, subject, start_time, end_time, type, room)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room))
             conn.commit()
             conn.close()
-            self.load_table()
+            self.load_lessons()
 
     def edit_lesson(self):
-        selected = self.table.currentRow()
-        if selected < 0:
-            return
-        item = self.table.item(selected, 0)
-        if not item:
-            return
-        lesson_id = self.get_lesson_id(selected)
-
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons WHERE id=?", (lesson_id,))
-        row = cursor.fetchone()
-        conn.close()
-        if not row:
-            return
-
-        lesson = Lesson(*row)
-        dialog = LessonDialog(lesson=lesson, parent=self)
-        if dialog.exec() == LessonDialog.DialogCode.Accepted:
-            updated = dialog.get_data()
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE lessons SET day=?, subject=?, time=?, type=?, room=?
-                WHERE id=?
-            """, (updated.day, updated.subject, updated.time, updated.type, updated.room, lesson_id))
-            conn.commit()
-            conn.close()
-            self.load_table()
+        # Placeholder for actual lesson selection logic
+        print("Edit lesson not implemented fully")
 
     def delete_lesson(self):
-        selected = self.table.currentRow()
-        if selected < 0:
-            return
-        lesson_id = self.get_lesson_id(selected)
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM lessons WHERE id=?", (lesson_id,))
-        conn.commit()
-        conn.close()
-        self.load_table()
+        # Placeholder for actual lesson selection logic
+        print("Delete lesson not implemented fully")
 
-    def delete_row(self, lesson_id):
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM lessons WHERE id=?", (lesson_id,))
-        conn.commit()
-        conn.close()
-        self.load_table()
+    def export_schedule(self):
+        pass
 
-    def get_lesson_id(self, row):
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        day = self.day_combo.currentText()
-        subject = self.table.item(row, 0).text()
-        cursor.execute("SELECT id FROM lessons WHERE day=? AND subject=?", (day, subject))
-        result = cursor.fetchone()
-        conn.close()
-        return result[0] if result else None
+    def import_schedule(self):
+        pass
 
     def export_to_csv(self):
-        day = self.day_combo.currentText()
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons WHERE day=?", (day,))
+        cursor.execute("SELECT * FROM lessons")
         rows = cursor.fetchall()
         conn.close()
 
@@ -224,10 +165,9 @@ class MainWindow(QMainWindow):
         export_to_csv(lessons, self)
 
     def export_to_json(self):
-        day = self.day_combo.currentText()
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons WHERE day=?", (day,))
+        cursor.execute("SELECT * FROM lessons")
         rows = cursor.fetchall()
         conn.close()
 
@@ -245,20 +185,15 @@ class MainWindow(QMainWindow):
     def bulk_insert_lessons(self, lessons):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-
-        # Clear current day first
-        current_day = self.day_combo.currentText()
-        cursor.execute("DELETE FROM lessons WHERE day=?", (current_day,))
-
-        # Insert new lessons
+        cursor.execute("DELETE FROM lessons")
         for lesson in lessons:
             cursor.execute("""
-                INSERT INTO lessons (day, subject, time, type, room)
-                VALUES (?, ?, ?, ?, ?)
-            """, (current_day, lesson.subject, lesson.time, lesson.type, lesson.room))
+                    INSERT INTO lessons (day, subject, start_time, end_time, type, room)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room))
         conn.commit()
         conn.close()
-        self.load_table()
+        self.load_lessons()
 
     def update_theme_button_icon(self):
         current_theme = load_theme()
@@ -271,7 +206,7 @@ class MainWindow(QMainWindow):
             with open(f"styles/{current_theme}.qss", "r") as f:
                 self.setStyleSheet(f.read())
         except Exception as e:
-            print("An error has occurred while loading theme:", e)
+            print("Theme load error:", e)
 
     def toggle_theme(self):
         current = load_theme()

@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Planer Harmonogramu",
+    "buttons": {
+      "theme": "Przełącz Motyw",
+      "add": "Dodaj Lekcję",
+      "export_csv": "Eksportuj CSV",
+      "import_csv": "Importuj CSV",
+      "settings": "Ustawienia"
+    }
+  }
+}

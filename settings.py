@@ -8,8 +8,8 @@ def save_theme(theme_name):
 def load_theme():
     return SETTINGS.value("app_theme", "dark_theme")
 
-def save_language(lang):
-    SETTINGS.setValue("language", lang)
+def save_language(lang_code):
+    SETTINGS.setValue("language", lang_code)
 
 def load_language():
     return SETTINGS.value("language", "en")

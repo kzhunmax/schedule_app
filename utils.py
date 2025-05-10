@@ -11,9 +11,9 @@ def export_to_csv(lessons, parent=None):
 
     with open(file_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(["ID", "Day", "Subject", "Time", "Type", "Room"])
+        writer.writerow(["ID", "Day", "Subject", "Start_time", "End_time", "Type", "Room"])
         for lesson in lessons:
-            writer.writerow([lesson.id, lesson.day, lesson.subject, lesson.time, lesson.type, lesson.room])
+            writer.writerow([lesson.id, lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room])
 
 
 def export_to_json(lessons, parent=None):
@@ -39,7 +39,8 @@ def import_from_csv(parent=None):
                 lesson_id=row.get("ID"),
                 day=row.get("Day"),
                 subject=row.get("Subject"),
-                time=row.get("Time"),
+                start_time=row.get("Start_time"),
+                end_time=row.get("End_time"),
                 lesson_type=row.get("Type"),
                 room=row.get("Room")
             ))

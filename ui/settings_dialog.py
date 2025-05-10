@@ -103,8 +103,10 @@ class SettingsDialog(QDialog):
 
     def save_current_language(self):
         selected = self.lang_combo.currentText()
-        lang_code = "uk" if selected == "Українська" else "en"
+        lang_code = {"Українська": "ukr", "English": "en"}.get(selected, "en")
         save_language(lang_code)
+        self.parent.cycle_language()
+        self.accept()
 
     @staticmethod
     def save_notification_state(state):

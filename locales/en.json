@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Schedule Planner",
+    "buttons": {
+      "theme": "Toggle Theme",
+      "add": "Add Lesson",
+      "export_csv": "Export CSV",
+      "import_csv": "Import CSV",
+      "settings": "Settings"
+    }
+  }
+}
