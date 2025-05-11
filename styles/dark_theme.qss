@@ -1,68 +1,115 @@
+/* Base Widget Style */
 QWidget {
-    background-color: #202020;
-    color: #ffffff;
+    background-color: #2b2b2b;
+    color: #e0e0e0;
     font-family: "Segoe UI";
     font-size: 14px;
-}
-
-QLabel {
-    color: #ffffff;
-}
-
-QPushButton {
-    background-color: #303030;
-    border-radius: 6px;
-    padding: 8px;
-    color: #ffffff;
+    outline: 0;
     border: none;
 }
 
+QLabel {
+    color: #d0d0d0;
+}
+
+QPushButton {
+    background-color: #3a3a3a;
+    border-radius: 8px;
+    padding: 10px;
+    color: #ffffff;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+}
+
 QPushButton:hover {
-    background-color: #454545;
+    background-color: #4f4f4f;
 }
 
 QPushButton:pressed {
+    background-color: #5c5c5c;
+}
+
+QPushButton#sidebarButton {
+    width: 150px;
+    padding-left: 10px;
+    min-height: 40px;
+    font-size: 14px;
+    background-color: #303030;
+    border: none;
+}
+
+QPushButton#sidebarButton:hover {
+    background-color: #454545;
+}
+
+QPushButton#sidebarButton:pressed {
     background-color: #5a5a5a;
 }
 
-QLineEdit, QComboBox, QTableWidget {
-    background-color: #2a2a2a;
-    border: 1px solid #444;
-    padding: 6px;
+QToolButton#sidebarButton {
+    width: 150px;
+    padding-left: 20px;
+    min-height: 40px;
+    font-size: 14px;
+    background-color: #303030;
+    border: none;
+}
+
+
+QToolButton#sidebarButton:hover {
+    background-color: #454545;
+}
+
+QToolButton#sidebarButton:pressed {
+    background-color: #5a5a5a;
+}
+
+/* Input Fields */
+QLineEdit, QComboBox {
+    background-color: #3a3a3a;
+    border: 1px solid #4f4f4f;
+    padding: 8px;
     border-radius: 6px;
     color: #ffffff;
 }
 
 QLineEdit:focus, QComboBox:focus {
-    border: 1px solid #777;
+    border: 1px solid #7f7f7f;
 }
 
+/* Table Widget */
 QTableWidget {
-    gridline-color: #3a3a3a;
-    selection-background-color: #4a4a4a;
-    background-color: #202020;
+    gridline-color: #444;
+    background-color: #1e1e1e;
     color: #ffffff;
+    selection-background-color: #444;
+}
+
+QTableWidget::item:selected {
+    background-color: #4a4a4a;
 }
 
 QHeaderView::section {
-    background-color: #2a2a2a;
+    background-color: #303030;
     color: #ffffff;
     padding: 6px;
-    border: 1px solid #333;
+    border: 1px solid #444;
+    font-weight: bold;
 }
 
 QComboBox::drop-down {
     background-color: transparent;
 }
 
+/* Scrollbars */
 QScrollBar:vertical {
-    background-color: #202020;
+    background-color: #2b2b2b;
     width: 10px;
-    margin: 0px;
 }
 
 QScrollBar::handle:vertical {
-    background-color: #555555;
+    background-color: #5a5a5a;
     min-height: 20px;
     border-radius: 5px;
 }
@@ -75,20 +122,78 @@ QScrollBar::add-page, QScrollBar::sub-page {
     background-color: none;
 }
 
-QPushButton#sidebarButton {
-    background-color: #303030;
-    border-radius: 6px;
-    padding: 8px;
-    color: #ffffff;
-    border: none;
-    text-align: left;
-    padding-left: 40px; /* Щоб текст не перекривав іконки */
+/* Sidebar */
+QFrame#sidebarFrame {
+    background-color: #212121;
+    margin: 0 0 0 0;
 }
 
-QPushButton#sidebarButton:hover {
+/* Settings Dialog */
+QDialog {
+    background-color: #2b2b2b;
+    color: #ffffff;
+}
+
+QComboBox {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    padding: 6px;
+    border: 1px solid #4f4f4f;
+    border-radius: 6px;
+    padding-left: 10px;
+}
+
+QComboBox::drop-down {
+    background-color: transparent;
+    border-left: 1px solid #555;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    selection-background-color: #4a4a4a;
+}
+
+/* Icons */
+QIcon {
+    color: #ffffff;
+}
+
+#themeSwitch {
+    spacing: 10px;
+    color: #e0e0e0;
+    padding-left: 10px;
+    min-height: 40px;
+    font-size: 14px;
+    background-color: #303030;
+    border: none;
+}
+
+#themeSwitch::indicator {
+    width: 40px;
+    height: 20px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    border: 1px solid #5a5a5a;
+}
+
+#themeSwitch::indicator:checked {
+    background-color: #008cba;
+    border: 1px solid #008cba;
+}
+
+#themeSwitch::indicator:unchecked {
+    background-color: #3a3a3a;
+    border: 1px solid #5a5a5a;
+}
+
+#themeSwitch:hover {
     background-color: #454545;
 }
 
-QPushButton#sidebarButton:pressed {
-    background-color: #5a5a5a;
+#themeSwitch::indicator:checked::text {
+    color: #008cba;
+}
+#themeSwitch::indicator:unchecked::text {
+    color: #999;
 }

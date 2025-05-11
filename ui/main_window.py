@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QFrame, QToolButton
@@ -22,10 +23,12 @@ class MainWindow(QMainWindow):
         self.load_current_theme()
         self.setWindowIcon(QIcon("images/icon.png"))
 
+        self.icon_buttons = []
+
         load_translations()
 
         # Порядок мов і їх коди
-        self.languages = [("English", "en"), ("Українська", "ukr"), ("Polska", "pl")]
+        self.languages = [("      English", "en"), ("      Українська", "ukr"), ("      Polska", "pl")]
         self.current_language_index = self.load_language_index()
 
         self.init_ui()
@@ -36,62 +39,78 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(main_widget)
         main_layout = QHBoxLayout(main_widget)
         main_layout.setContentsMargins(5, 5, 5, 5)
-        main_layout.setSpacing(5)
+        main_layout.setSpacing(0)
 
         self.schedule_view = ScheduleView()
 
         sidebar = QVBoxLayout()
         sidebar.setAlignment(Qt.AlignmentFlag.AlignTop)
-        sidebar.setSpacing(5)
+        sidebar.setSpacing(0)
 
-        # Кнопка перемикання мови
-        self.language_button = QToolButton()
-        self.language_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.language_button.setFixedHeight(40)
-        self.language_button.setObjectName("sidebarButton")
-        self.language_button.setIcon(QIcon("images/icon.png"))
-        self.language_button.clicked.connect(self.cycle_language)
-        sidebar.addWidget(self.language_button)
+
+        # Кнопки бічної панелі
+        self.language_button = self.create_sidebar_button("", "globe.png", self.cycle_language)
+        self.add_btn = self.create_sidebar_button("", "plus.png", self.add_lesson)
+        self.export_schedule = self.create_sidebar_button("", "export.png", self.export_to_csv)
+        self.import_schedule = self.create_sidebar_button("", "import.png", self.import_from_csv)
+        self.settings_btn = self.create_sidebar_button("", "settings.png", self.open_settings)
+        self.theme_btn = self.create_sidebar_button("", "moon.png", self.toggle_theme)
+
+        for btn in [self.language_button, self.add_btn, self.export_schedule, self.import_schedule, self.settings_btn, self.theme_btn]:
+            sidebar.addWidget(btn)
+            self.icon_buttons.append(btn)
 
         lang_name, _ = self.languages[self.current_language_index]
         self.language_button.setText(lang_name)
 
-        # Кнопки бічної панелі
-        self.theme_btn = self.create_sidebar_button("", "cil-lightbulb.png", self.toggle_theme)
-        self.add_btn = self.create_sidebar_button("", "cil-plus.png", self.add_lesson)
-        self.export_schedule = self.create_sidebar_button("", "cil-level-up.png", self.export_to_csv)
-        self.import_schedule = self.create_sidebar_button("", "cil-level-down.png", self.import_from_csv)
-        self.settings_btn = self.create_sidebar_button("", "cil-settings.png", self.open_settings)
-
-        for btn in [self.theme_btn, self.add_btn, self.export_schedule, self.import_schedule, self.settings_btn]:
-            sidebar.addWidget(btn)
-
         sidebar_frame = QFrame()
         sidebar_frame.setLayout(sidebar)
-        sidebar_frame.setFixedWidth(200)
-        sidebar_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        sidebar_frame.setFrameShape(QFrame.Shape.NoFrame)
 
         right_frame = QFrame()
         right_frame.setFrameShape(QFrame.Shape.StyledPanel)
         right_layout = QVBoxLayout(right_frame)
-        right_layout.setContentsMargins(0, 0, 0, 0)
         right_layout.addWidget(self.schedule_view)
 
         main_layout.addWidget(sidebar_frame)
         main_layout.addWidget(right_frame)
         main_layout.setStretch(1, 1)
 
-        self.update_theme_button_icon()
         self.update_ui_texts()
+        self.update_all_button_icons()
 
-    def create_sidebar_button(self, text, icon_name, callback):
+    def update_all_button_icons(self):
+        current_theme = load_theme()
+
+        for btn in self.icon_buttons:
+            if not hasattr(btn, "icon_name"):
+                continue
+
+            icon_base = btn.icon_name
+
+            # Special case for theme toggle button
+            suffix = "-light" if current_theme == "light_theme" else "-dark"
+            icon_name = f"{icon_base}{suffix}.png"
+
+            icon_path = f"images/icons/{icon_name}"
+
+            if os.path.exists(icon_path):
+                btn.setIcon(QIcon(icon_path))
+            else:
+                # Fallback to default icon without suffix
+                fallback_icon_path = f"images/icons/{icon_base}.png"
+                if os.path.exists(fallback_icon_path):
+                    btn.setIcon(QIcon(fallback_icon_path))
+
+    @staticmethod
+    def create_sidebar_button(text, icon_name, callback):
         btn = QToolButton()
         btn.setIcon(QIcon(f"images/icons/{icon_name}"))
         btn.setText(text)
         btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         btn.setObjectName("sidebarButton")
-        btn.setFixedHeight(40)
         btn.clicked.connect(callback)
+        btn.icon_name = icon_name.split('.')[0]
         return btn
 
     def load_language_index(self):
@@ -110,11 +129,14 @@ class MainWindow(QMainWindow):
 
     def update_ui_texts(self):
         self.setWindowTitle(tr("app.title"))
-        self.theme_btn.setText(tr("app.buttons.theme"))
         self.add_btn.setText(tr("app.buttons.add"))
         self.export_schedule.setText(tr("app.buttons.export_csv"))
         self.import_schedule.setText(tr("app.buttons.import_csv"))
         self.settings_btn.setText(tr("app.buttons.settings"))
+        if load_theme() == "light_theme":
+            self.theme_btn.setText(tr("app.buttons.light_theme"))
+        else:
+            self.theme_btn.setText(tr("app.buttons.dark_theme"))
 
     def load_lessons(self):
         conn = sqlite3.connect(DB_PATH)
@@ -195,11 +217,6 @@ class MainWindow(QMainWindow):
         conn.close()
         self.load_lessons()
 
-    def update_theme_button_icon(self):
-        current_theme = load_theme()
-        icon_path = "images/icons/cil-moon.png" if current_theme == "dark_theme" else "images/icons/cil-lightbulb.png"
-        self.theme_btn.setIcon(QIcon(icon_path))
-
     def load_current_theme(self):
         current_theme = load_theme()
         try:
@@ -213,7 +230,8 @@ class MainWindow(QMainWindow):
         new_theme = "light_theme" if current == "dark_theme" else "dark_theme"
         save_theme(new_theme)
         self.load_current_theme()
-        self.update_theme_button_icon()
+        self.update_ui_texts()
+        self.update_all_button_icons()
 
     def open_settings(self):
         dialog = SettingsDialog(parent=self)
