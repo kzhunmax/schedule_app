@@ -1,5 +1,5 @@
 class Lesson:
-    def __init__(self, lesson_id=None, day="", subject="", start_time="", end_time="", lesson_type="", room=""):
+    def __init__(self, lesson_id=None, day="", subject="", start_time="", end_time="", lesson_type="", room="", color=""):
         self.id = lesson_id
         self.day = day
         self.subject = subject
@@ -7,6 +7,7 @@ class Lesson:
         self.end_time = end_time
         self.type = lesson_type
         self.room = room
+        self.color = color or "#00a7e5"
 
     def to_dict(self):
         return {
@@ -16,7 +17,8 @@ class Lesson:
             "start_time": self.start_time,
             "end_time": self.end_time,
             "type": self.type,
-            "room": self.room
+            "room": self.room,
+            "color": self.color
         }
 
     @staticmethod
@@ -28,5 +30,6 @@ class Lesson:
             start_time=data.get("start_time", ""),
             end_time=data.get("end_time", ""),
             lesson_type=data.get("type", ""),
-            room=data.get("room", "")
+            room=data.get("room", ""),
+            color = data.get("color")
         )

@@ -12,7 +12,7 @@
     "settings": {
       "title": "Settings",
       "theme": "Choose Theme",
-      "View Mode": "Schedule View",
+      "view_mode": "Schedule View",
       "language": "Choose Language",
       "daily": "Daily",
       "weekly": "Weekly",
@@ -20,7 +20,43 @@
       "yes": "Yes",
       "no": "No",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "export": {
+      "title": "Export Schedule",
+      "csv": "Export as CSV",
+      "json": "Export as JSON"
+    },
+    "import": {
+      "title": "Import Schedule",
+      "instructions": "Drag and drop a .csv or .json file here",
+      "unsupported_format": "Unsupported file format. Please use .csv or .json."
+    },
+    "lesson_dialog": {
+      "title": "Add/Edit Lesson",
+      "label_day": "Day:",
+      "label_subject": "Subject:",
+      "label_start_time": "Start Time:",
+      "label_end_time": "End Time:",
+      "label_type": "Type:",
+      "label_room": "Room:",
+      "time_placeholder": "e.g. 09:00",
+      "type_online": "Online",
+      "type_offline": "Offline",
+      "save": "Save",
+      "cancel": "Cancel",
+      "label_color": "Choose Color:"
+    },
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
     }
   }
 }

@@ -54,7 +54,6 @@ QToolButton#sidebarButton:pressed {
 /* Input Fields */
 QLineEdit, QComboBox {
     background-color: #3a3a3a;
-    border: 1px solid #4f4f4f;
     padding: 8px;
     border-radius: 6px;
     color: #ffffff;
@@ -62,30 +61,6 @@ QLineEdit, QComboBox {
 
 QLineEdit:focus, QComboBox:focus {
     border: 1px solid #7f7f7f;
-}
-
-/* Table Widget */
-QTableWidget {
-    gridline-color: #444;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    selection-background-color: #444;
-}
-
-QTableWidget::item:selected {
-    background-color: #4a4a4a;
-}
-
-QHeaderView::section {
-    background-color: #303030;
-    color: #ffffff;
-    padding: 6px;
-    border: 1px solid #444;
-    font-weight: bold;
-}
-
-QComboBox::drop-down {
-    background-color: transparent;
 }
 
 /* Scrollbars */
@@ -120,24 +95,15 @@ QDialog {
     color: #ffffff;
 }
 
-QComboBox {
-    background-color: #3a3a3a;
-    color: #ffffff;
-    padding: 6px;
-    border: 1px solid #4f4f4f;
-    border-radius: 6px;
-    padding-left: 10px;
-}
-
 QComboBox::drop-down {
     background-color: transparent;
-    border-left: 1px solid #555;
 }
 
 QComboBox QAbstractItemView {
     background-color: #3a3a3a;
     color: #ffffff;
     selection-background-color: #4a4a4a;
+    border-radius: 6px;
 }
 
 /* Icons */
@@ -195,5 +161,12 @@ QPushButton#optionButton {
 QPushButton#optionButton:checked {
     background-color: #454545;
     color: white;
-    border-color: #007ba0;
+}
+
+QPushButton[checkable="true"] {
+    border: 2px solid transparent;
+}
+
+QPushButton[checkable="true"]:checked {
+    border: 2px solid #ffffff;
 }

@@ -1,26 +1,62 @@
 {
   "app": {
-    "title": "Schedule Planner",
+    "title": "Plan Zajęć",
     "buttons": {
-      "light_theme": "      Light mode",
-      "dark_theme": "      Night mode",
-      "add": "      Add Lesson",
-      "export_csv": "      Export",
-      "import_csv": "      Import",
-      "settings": "      Settings"
+      "light_theme": "      Jasny motyw",
+      "dark_theme": "      Ciemny motyw",
+      "add": "      Dodaj zajęcia",
+      "export_csv": "      Eksportuj",
+      "import_csv": "      Importuj",
+      "settings": "      Ustawienia"
     },
     "settings": {
-      "title": "Settings",
-      "theme": "Choose Theme",
-      "View Mode": "Schedule View",
-      "language": "Choose Language",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "notifications": "Enable Notifications",
-      "yes": "Yes",
-      "no": "No",
-      "cancel": "Cancel",
-      "save": "Save"
+      "title": "Ustawienia",
+      "theme": "Wybierz motyw",
+      "view_mode": "Widok planu",
+      "language": "Wybierz język",
+      "daily": "Codziennie",
+      "weekly": "Tygodniowo",
+      "notifications": "Włącz powiadomienia",
+      "yes": "Tak",
+      "no": "Nie",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "dark": "Ciemny",
+      "light": "Jasny"
+    },
+    "export": {
+      "title": "Eksportuj plan",
+      "csv": "Eksportuj jako CSV",
+      "json": "Eksportuj jako JSON"
+    },
+    "import": {
+      "title": "Importuj plan",
+      "instructions": "Upuść plik .csv lub .json tutaj",
+      "unsupported_format": "Nieobsługiwany format. Proszę użyć .csv lub .json."
+    },
+    "lesson_dialog": {
+      "title": "Dodaj/Zmień zajęcia",
+      "label_day": "Dzień:",
+      "label_subject": "Przedmiot:",
+      "label_start_time": "Czas rozpoczęcia:",
+      "label_end_time": "Czas zakończenia:",
+      "label_type": "Typ:",
+      "label_room": "Sala:",
+      "time_placeholder": "np. 09:00",
+      "type_online": "Online",
+      "type_offline": "Stacjonarnie",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "label_color": "Wybierz Kolor:"
+    },
+    "days": {
+      "monday": "Poniedziałek",
+      "tuesday": "Wtorek",
+      "wednesday": "Środa",
+      "thursday": "Czwartek",
+      "friday": "Piątek",
+      "saturday": "Sobota",
+      "sunday": "Niedziela"
     }
   }
 }

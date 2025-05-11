@@ -7,8 +7,9 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 from database import DB_PATH
 from models import Lesson
+from ui.export_dialog import ExportDialog
+from ui.import_dialog import ImportDialog
 from ui.lesson_dialog import LessonDialog
-from utils import export_to_csv, export_to_json, import_from_csv, import_from_json
 from settings import save_theme, load_theme, load_language
 from ui.settings_dialog import SettingsDialog
 from ui.schedule_view import ScheduleView
@@ -52,8 +53,8 @@ class MainWindow(QMainWindow):
         # Кнопки бічної панелі
         self.language_button = self.create_sidebar_button("", "globe.png", self.cycle_language)
         self.add_btn = self.create_sidebar_button("", "plus.png", self.add_lesson)
-        self.export_schedule = self.create_sidebar_button("", "export.png", self.export_to_csv)
-        self.import_schedule = self.create_sidebar_button("", "import.png", self.import_from_csv)
+        self.export_schedule = self.create_sidebar_button("", "export.png", self.open_export_dialog)
+        self.import_schedule = self.create_sidebar_button("", "import.png", self.open_import_dialog)
         self.settings_btn = self.create_sidebar_button("", "settings.png", self.open_settings)
         self.theme_btn = self.create_sidebar_button("", "moon.png", self.toggle_theme)
 
@@ -141,12 +142,10 @@ class MainWindow(QMainWindow):
         else:
             self.theme_btn.setText(tr("app.buttons.dark_theme"))
 
-
-
     def load_lessons(self):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons ORDER BY day, start_time")  # Add sorting
+        cursor.execute("SELECT * FROM lessons ORDER BY day, start_time")
         rows = cursor.fetchall()
         conn.close()
 
@@ -157,7 +156,7 @@ class MainWindow(QMainWindow):
         dialog = LessonDialog(parent=self)
         if dialog.exec() == LessonDialog.DialogCode.Accepted:
             lesson = dialog.get_data()
-            conn = sqlite3.connect('data/schedule.db')
+            conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
             cursor.execute("""
                     INSERT INTO lessons (day, subject, start_time, end_time, type, room)
@@ -168,56 +167,31 @@ class MainWindow(QMainWindow):
             self.load_lessons()
 
     def edit_lesson(self):
-        # Placeholder for actual lesson selection logic
-        print("Edit lesson not implemented fully")
+        pass
 
     def delete_lesson(self):
-        # Placeholder for actual lesson selection logic
-        print("Delete lesson not implemented fully")
-
-    def export_schedule(self):
         pass
-
-    def import_schedule(self):
-        pass
-
-    def export_to_csv(self):
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons")
-        rows = cursor.fetchall()
-        conn.close()
-
-        lessons = [Lesson(*row) for row in rows]
-        export_to_csv(lessons, self)
-
-    def export_to_json(self):
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM lessons")
-        rows = cursor.fetchall()
-        conn.close()
-
-        lessons = [Lesson(*row) for row in rows]
-        export_to_json(lessons, self)
-
-    def import_from_csv(self):
-        lessons = import_from_csv(self)
-        self.bulk_insert_lessons(lessons)
-
-    def import_from_json(self):
-        lessons = import_from_json(self)
-        self.bulk_insert_lessons(lessons)
 
     def bulk_insert_lessons(self, lessons):
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM lessons")
+
         for lesson in lessons:
             cursor.execute("""
-                    INSERT INTO lessons (day, subject, start_time, end_time, type, room)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room))
+                    INSERT INTO lessons (id, day, subject, start_time, end_time, type, room, color)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                lesson.id,
+                lesson.day,
+                lesson.subject,
+                lesson.start_time,
+                lesson.end_time,
+                lesson.type,
+                lesson.room,
+                lesson.color
+            ))
+
         conn.commit()
         conn.close()
         self.load_lessons()
@@ -253,3 +227,11 @@ class MainWindow(QMainWindow):
         self.update_language_button_text()
         self.update_ui_texts()
         self.update_all_button_icons()
+
+    def open_export_dialog(self):
+        dialog = ExportDialog(self)
+        dialog.exec()
+
+    def open_import_dialog(self):
+        dialog = ImportDialog(self)
+        dialog.exec()

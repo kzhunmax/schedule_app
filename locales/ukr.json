@@ -1,26 +1,62 @@
 {
   "app": {
-    "title": "Schedule Planner",
+    "title": "Планувальник розкладу",
     "buttons": {
-      "light_theme": "      Light mode UKR",
-      "dark_theme": "      Night mode UKR",
-      "add": "      Add Lesson",
-      "export_csv": "      Export",
-      "import_csv": "      Import",
-      "settings": "      Settings"
+      "light_theme": "      Світла тема",
+      "dark_theme": "      Темна тема",
+      "add": "      Додати заняття",
+      "export_csv": "      Експортувати",
+      "import_csv": "      Імпортувати",
+      "settings": "      Налаштування"
     },
     "settings": {
-      "title": "Settings",
-      "theme": "Choose Theme",
-      "View Mode": "Schedule View",
-      "language": "Choose Language",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "notifications": "Enable Notifications",
-      "yes": "Yes",
-      "no": "No",
-      "cancel": "Cancel",
-      "save": "Save"
+      "title": "Налаштування",
+      "theme": "Оберіть тему",
+      "view_mode": "Вигляд розкладу",
+      "language": "Оберіть мову",
+      "daily": "Щоденний",
+      "weekly": "Тижневий",
+      "notifications": "Увімкнути сповіщення",
+      "yes": "Так",
+      "no": "Ні",
+      "cancel": "Скасувати",
+      "save": "Зберегти",
+      "dark": "Темна",
+      "light": "Світла"
+    },
+    "export": {
+      "title": "Експорт розкладу",
+      "csv": "Експортувати як CSV",
+      "json": "Експортувати як JSON"
+    },
+    "import": {
+      "title": "Імпорт розкладу",
+      "instructions": "Перетягніть файл .csv або .json сюди",
+      "unsupported_format": "Непідтримуваний формат. Використовуйте .csv або .json."
+    },
+    "lesson_dialog": {
+      "title": "Додати/Редагувати заняття",
+      "label_day": "День:",
+      "label_subject": "Предмет:",
+      "label_start_time": "Час початку:",
+      "label_end_time": "Час закінчення:",
+      "label_type": "Тип:",
+      "label_room": "Аудиторія:",
+      "time_placeholder": "наприклад, 09:00",
+      "type_online": "Онлайн",
+      "type_offline": "Офлайн",
+      "save": "Зберегти",
+      "cancel": "Скасувати",
+      "label_color": "Обери Колір:"
+    },
+    "days": {
+      "monday": "Понеділок",
+      "tuesday": "Вівторок",
+      "wednesday": "Середа",
+      "thursday": "Четвер",
+      "friday": "П’ятниця",
+      "saturday": "Субота",
+      "sunday": "Неділя"
     }
   }
 }

@@ -1,64 +1,115 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit,
-    QPushButton, QComboBox, QHBoxLayout
+    QPushButton, QHBoxLayout, QComboBox, QFrame, QButtonGroup
 )
 from models import Lesson
-
+from language import tr
 
 class LessonDialog(QDialog):
+    COLORS = ["#00a7e5", "#14142b", "#e40173", "#6308f7", "#ff7f08", "#44d6df", "#b1cb49"]
+
     def __init__(self, lesson=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Add/Edit Lesson")
+        self.setWindowTitle(tr("app.lesson_dialog.title"))
         self.lesson = lesson or Lesson()
+        self.setMinimumSize(400, 650)
 
         layout = QVBoxLayout()
+        layout.setSpacing(10)
+        layout.setContentsMargins(20, 10, 20, 20)
 
         # Day of the week
         self.day_combo = QComboBox()
-        self.day_combo.addItems(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.day_combo.addItems([
+            tr("app.days.monday"),
+            tr("app.days.tuesday"),
+            tr("app.days.wednesday"),
+            tr("app.days.thursday"),
+            tr("app.days.friday")
+        ])
         if self.lesson.day:
-            self.day_combo.setCurrentText(self.lesson.day)
+            self.day_combo.setCurrentText(tr(f"app.days.{self.lesson.day.lower()}"))
 
         # Subject
         self.subject_input = QLineEdit(self.lesson.subject)
 
         # Start time
         self.start_time_input = QLineEdit(self.lesson.start_time)
-        self.start_time_input.setPlaceholderText("e.g. 09:00")
+        self.start_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
 
         # End time
         self.end_time_input = QLineEdit(self.lesson.end_time)
-        self.end_time_input.setPlaceholderText("e.g. 10:30")
+        self.end_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
 
-        # Type (online/offline)
-        self.type_combo = QComboBox()
-        self.type_combo.addItems(["Online", "Offline"])
-        if self.lesson.type in ["Online", "Offline"]:
-            self.type_combo.setCurrentText(self.lesson.type)
+        # Type: Online / Offline (кнопки з вибором)
+        self.online_btn = QPushButton(tr("app.lesson_dialog.type_online"))
+        self.offline_btn = QPushButton(tr("app.lesson_dialog.type_offline"))
+
+        for btn in [self.online_btn, self.offline_btn]:
+            btn.setObjectName("optionButton")
+            btn.setCheckable(True)
+
+        # --- Додаємо групу для ексклюзивного вибору ---
+        self.type_button_group = QFrame()
+        self.type_button_group_layout = QHBoxLayout()
+
+        # Створюємо групу кнопок
+        self.option_group = QButtonGroup(self)
+        self.option_group.addButton(self.online_btn)
+        self.option_group.addButton(self.offline_btn)
+        self.option_group.setExclusive(True)
+
+        if self.lesson.type == "Online":
+            self.online_btn.setChecked(True)
+        elif self.lesson.type == "Offline":
+            self.offline_btn.setChecked(True)
         else:
-            self.type_combo.setCurrentIndex(0)
+            self.online_btn.setChecked(True)
+
+        # Додаємо кнопки в layout
+        self.type_button_group_layout.addWidget(self.online_btn)
+        self.type_button_group_layout.addWidget(self.offline_btn)
+        self.type_button_group.setLayout(self.type_button_group_layout)
 
         # Room
         self.room_input = QLineEdit(self.lesson.room)
 
         # Layout widgets
-        layout.addWidget(QLabel("Day:"))
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_day")))
         layout.addWidget(self.day_combo)
-        layout.addWidget(QLabel("Subject:"))
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_subject")))
         layout.addWidget(self.subject_input)
-        layout.addWidget(QLabel("Start Time:"))
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_start_time")))
         layout.addWidget(self.start_time_input)
-        layout.addWidget(QLabel("End Time:"))
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_end_time")))
         layout.addWidget(self.end_time_input)
-        layout.addWidget(QLabel("Type:"))
-        layout.addWidget(self.type_combo)
-        layout.addWidget(QLabel("Room:"))
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_type")))
+        layout.addWidget(self.type_button_group)
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_room")))
         layout.addWidget(self.room_input)
+
+        # --- Вибір кольору ---
+        layout.addWidget(QLabel(tr("app.lesson_dialog.label_color")))
+
+        self.color_button_group = QButtonGroup(self)
+        self.color_button_group.setExclusive(True)
+
+        color_layout = QHBoxLayout()
+        for color in self.COLORS:
+            btn = QPushButton()
+            btn.setFixedSize(30, 30)
+            btn.setStyleSheet(f"background-color: {color}; border-radius: 15px;")
+            btn.setCheckable(True)
+            btn.setToolTip(color)
+            self.color_button_group.addButton(btn)
+            color_layout.addWidget(btn)
+
+        layout.addLayout(color_layout)
 
         # Buttons
         btn_layout = QHBoxLayout()
-        save_btn = QPushButton("Save")
-        cancel_btn = QPushButton("Cancel")
+        save_btn = QPushButton(tr("app.lesson_dialog.save"))
+        cancel_btn = QPushButton(tr("app.lesson_dialog.cancel"))
         save_btn.clicked.connect(self.accept)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(save_btn)
@@ -67,12 +118,29 @@ class LessonDialog(QDialog):
 
         self.setLayout(layout)
 
+    def update_color_buttons(self):
+        for button in self.color_button_group.buttons():
+            if button.toolTip() == self.lesson.color:
+                button.setChecked(True)
+                break
+        else:
+            self.color_button_group.buttons()[0].setChecked(True)
+
+
     def get_data(self):
+        selected_button = self.color_button_group.checkedButton()
+        self.selected_color = selected_button.toolTip() if selected_button else "#00a7e5"
+
+        selected_type = self.option_group.checkedButton()
+        lesson_type = "Online" if selected_type == self.online_btn else "Offline"
+
         return Lesson(
+            lesson_id=self.lesson.id,
             day=self.day_combo.currentText(),
-            subject=self.subject_input.text(),
-            start_time=self.start_time_input.text(),
-            end_time=self.end_time_input.text(),
-            lesson_type=self.type_combo.currentText(),
-            room=self.room_input.text()
+            subject=self.subject_input.text().strip(),
+            start_time=self.start_time_input.text().strip(),
+            end_time=self.end_time_input.text().strip(),
+            lesson_type=lesson_type,
+            room=self.room_input.text().strip(),
+            color=self.selected_color
         )

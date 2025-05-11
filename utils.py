@@ -11,9 +11,9 @@ def export_to_csv(lessons, parent=None):
 
     with open(file_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(["ID", "Day", "Subject", "Start_time", "End_time", "Type", "Room"])
+        writer.writerow(["ID", "Day", "Subject", "Start_time", "End_time", "Type", "Room", "Color"])
         for lesson in lessons:
-            writer.writerow([lesson.id, lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room])
+            writer.writerow([lesson.id, lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room, lesson.color])
 
 
 def export_to_json(lessons, parent=None):
@@ -26,32 +26,34 @@ def export_to_json(lessons, parent=None):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-def import_from_csv(parent=None):
-    file_path, _ = QFileDialog.getOpenFileName(parent, "Choose CSV", "", "CSV Files (*.csv)")
-    if not file_path:
+def import_from_csv(file_path):
+    try:
+        with open(file_path, mode='r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            lessons = []
+            for row in reader:
+                lesson = Lesson(
+                    lesson_id=row.get("ID"),
+                    day=row.get('Day', ''),
+                    subject=row.get('Subject', ''),
+                    start_time=row.get('Start_time', ''),
+                    end_time=row.get('End_time', ''),
+                    lesson_type=row.get('Type', ''),
+                    room=row.get('Room', ''),
+                    color=row.get('Color', '')
+                )
+                lessons.append(lesson)
+            return lessons
+    except Exception as e:
+        print("CSV Import Error:", e)
         return []
 
-    lessons = []
-    with open(file_path, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            lessons.append(Lesson(
-                lesson_id=row.get("ID"),
-                day=row.get("Day"),
-                subject=row.get("Subject"),
-                start_time=row.get("Start_time"),
-                end_time=row.get("End_time"),
-                lesson_type=row.get("Type"),
-                room=row.get("Room")
-            ))
-    return lessons
 
-
-def import_from_json(parent=None):
-    file_path, _ = QFileDialog.getOpenFileName(parent, "Choose JSON", "", "JSON Files (*.json)")
-    if not file_path:
+def import_from_json(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return [Lesson.from_dict(item) for item in data]
+    except Exception as e:
+        print("JSON Import Error:", e)
         return []
-
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        return [Lesson.from_dict(item) for item in data]

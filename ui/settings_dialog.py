@@ -20,15 +20,15 @@ class SettingsDialog(QDialog):
 
     def init_ui(self):
         layout = QVBoxLayout()
-        layout.setSpacing(20)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(10)
+        layout.setContentsMargins(20, 10, 20, 20)
 
         # --- Theme Setting ---
         layout.addWidget(QLabel("<b>" + tr("app.settings.theme") + "</b>"))
 
         theme_btn_layout = QHBoxLayout()
-        self.theme_dark_btn = QPushButton("Dark")
-        self.theme_light_btn = QPushButton("Light")
+        self.theme_dark_btn = QPushButton(tr("app.settings.dark"))
+        self.theme_light_btn = QPushButton(tr("app.settings.light"))
         self.theme_dark_btn.setCheckable(True)
         self.theme_light_btn.setCheckable(True)
         self.theme_dark_btn.setObjectName("optionButton")
