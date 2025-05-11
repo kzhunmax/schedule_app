@@ -8,6 +8,19 @@
       "export_csv": "      Export",
       "import_csv": "      Import",
       "settings": "      Settings"
+    },
+    "settings": {
+      "title": "Settings",
+      "theme": "Choose Theme",
+      "View Mode": "Schedule View",
+      "language": "Choose Language",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "notifications": "Enable Notifications",
+      "yes": "Yes",
+      "no": "No",
+      "cancel": "Cancel",
+      "save": "Save"
     }
   }
 }

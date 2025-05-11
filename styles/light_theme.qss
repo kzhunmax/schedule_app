@@ -1,7 +1,7 @@
 /* Base Widget Style */
 QWidget {
     background-color: #f5f5f5;
-    color: #1C1C1C;
+    color: #333333;
     font-family: "Segoe UI";
     font-size: 14px;
     outline: 0;
@@ -9,7 +9,9 @@ QWidget {
 }
 
 QLabel {
-    color: #1C1C1C;
+    color: #444444;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 QPushButton {
@@ -20,6 +22,7 @@ QPushButton {
     border: none;
     text-align: center;
     font-size: 14px;
+    width: 100%;
 }
 
 QPushButton:hover {
@@ -28,23 +31,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
     background-color: #c0c0c0;
-}
-
-QPushButton#sidebarButton {
-    width: 150px;
-    padding-left: 10px;
-    min-height: 40px;
-    font-size: 14px;
-    background-color: #dddddd;
-    border: none;
-}
-
-QPushButton#sidebarButton:hover {
-    background-color: #cccccc;
-}
-
-QPushButton#sidebarButton:pressed {
-    background-color: #bbbbbb;
 }
 
 QToolButton#sidebarButton {
@@ -81,7 +67,7 @@ QLineEdit:focus, QComboBox:focus {
 QTableWidget {
     gridline-color: #ddd;
     background-color: #ffffff;
-    color: #1C1C1C;
+    color: #333333;
     selection-background-color: #cfe8f3;
 }
 
@@ -91,7 +77,7 @@ QTableWidget::item:selected {
 
 QHeaderView::section {
     background-color: #eeeeee;
-    color: #1C1C1C;
+    color: #333333;
     padding: 6px;
     border: 1px solid #cccccc;
     font-weight: bold;
@@ -123,19 +109,19 @@ QScrollBar::add-page, QScrollBar::sub-page {
 
 /* Sidebar */
 QFrame#sidebarFrame {
-    background-color: #eaeaea;
+    background-color: #eeeeee;
     margin: 0 0 0 0;
 }
 
 /* Settings Dialog */
 QDialog {
     background-color: #f5f5f5;
-    color: #1C1C1C;
+    color: #333333;
 }
 
 QComboBox {
     background-color: #ffffff;
-    color: #1C1C1C;
+    color: #000000;
     padding: 6px;
     border: 1px solid #cccccc;
     border-radius: 6px;
@@ -149,18 +135,18 @@ QComboBox::drop-down {
 
 QComboBox QAbstractItemView {
     background-color: #ffffff;
-    color: #1C1C1C;
+    color: #000000;
     selection-background-color: #dfefff;
 }
 
 /* Icons */
 QIcon {
-    color: #1C1C1C;
+    color: #000000;
 }
 
 #themeSwitch {
     spacing: 10px;
-    color: #1C1C1C;
+    color: #333333;
     padding-left: 10px;
     min-height: 40px;
     font-size: 14px;
@@ -195,4 +181,18 @@ QIcon {
 }
 #themeSwitch::indicator:unchecked::text {
     color: #999;
+}
+
+QPushButton#optionButton {
+    background-color: #eeeeee;
+    border-radius: 4px;
+    font-weight: normal;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+QPushButton#optionButton:checked {
+    background-color: #d0d0d0;
+    color: black;
+    border-color: #999;
 }

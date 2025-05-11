@@ -38,13 +38,14 @@ class MainWindow(QMainWindow):
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         main_layout = QHBoxLayout(main_widget)
-        main_layout.setContentsMargins(5, 5, 5, 5)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
         self.schedule_view = ScheduleView()
 
         sidebar = QVBoxLayout()
         sidebar.setAlignment(Qt.AlignmentFlag.AlignTop)
+        sidebar.setContentsMargins(0, 0, 0, 0)
         sidebar.setSpacing(0)
 
 
@@ -59,9 +60,6 @@ class MainWindow(QMainWindow):
         for btn in [self.language_button, self.add_btn, self.export_schedule, self.import_schedule, self.settings_btn, self.theme_btn]:
             sidebar.addWidget(btn)
             self.icon_buttons.append(btn)
-
-        lang_name, _ = self.languages[self.current_language_index]
-        self.language_button.setText(lang_name)
 
         sidebar_frame = QFrame()
         sidebar_frame.setLayout(sidebar)
@@ -78,6 +76,7 @@ class MainWindow(QMainWindow):
 
         self.update_ui_texts()
         self.update_all_button_icons()
+        self.update_language_button_text()
 
     def update_all_button_icons(self):
         current_theme = load_theme()
@@ -123,9 +122,13 @@ class MainWindow(QMainWindow):
     def cycle_language(self):
         self.current_language_index = (self.current_language_index + 1) % len(self.languages)
         _, lang_code = self.languages[self.current_language_index]
-        set_language(lang_code)  # наприклад, змінюємо глобальну мову
-        self.language_button.setText(_)  # оновлюємо текст кнопки
-        self.update_ui_texts()  # оновлюємо всі елементи інтерфейсу
+        set_language(lang_code)
+        self.update_language_button_text()
+        self.update_ui_texts()
+
+    def update_language_button_text(self):
+        lang_name, _ = self.languages[self.current_language_index]
+        self.language_button.setText(lang_name)
 
     def update_ui_texts(self):
         self.setWindowTitle(tr("app.title"))
@@ -137,6 +140,8 @@ class MainWindow(QMainWindow):
             self.theme_btn.setText(tr("app.buttons.light_theme"))
         else:
             self.theme_btn.setText(tr("app.buttons.dark_theme"))
+
+
 
     def load_lessons(self):
         conn = sqlite3.connect(DB_PATH)
@@ -236,3 +241,15 @@ class MainWindow(QMainWindow):
     def open_settings(self):
         dialog = SettingsDialog(parent=self)
         dialog.exec()
+
+    def set_new_language(self, lang_code):
+        set_language(lang_code)
+
+        for i, (_, code) in enumerate(self.languages):
+            if code == lang_code:
+                self.current_language_index = i
+                break
+
+        self.update_language_button_text()
+        self.update_ui_texts()
+        self.update_all_button_icons()

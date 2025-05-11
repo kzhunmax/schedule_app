@@ -1,13 +1,26 @@
 {
   "app": {
-    "title": "Planer Harmonogramu",
+    "title": "Schedule Planner",
     "buttons": {
-      "light_theme": "      Przełącz Motyw",
-      "dark_theme": "      Przełącz Motyw",
-      "add": "      Dodaj Lekcję",
-      "export_csv": "      Eksportuj",
-      "import_csv": "      Importuj",
-      "settings": "      Ustawienia"
+      "light_theme": "      Light mode",
+      "dark_theme": "      Night mode",
+      "add": "      Add Lesson",
+      "export_csv": "      Export",
+      "import_csv": "      Import",
+      "settings": "      Settings"
+    },
+    "settings": {
+      "title": "Settings",
+      "theme": "Choose Theme",
+      "View Mode": "Schedule View",
+      "language": "Choose Language",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "notifications": "Enable Notifications",
+      "yes": "Yes",
+      "no": "No",
+      "cancel": "Cancel",
+      "save": "Save"
     }
   }
 }

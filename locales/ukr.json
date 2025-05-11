@@ -1,13 +1,26 @@
 {
   "app": {
-    "title": "Планувальник Розкладу",
+    "title": "Schedule Planner",
     "buttons": {
-      "light_theme": "      Світла тема",
-      "dark_theme": "      Темна тема",
-      "add": "      Додати Заняття",
-      "export_csv": "      Експортувати",
-      "import_csv": "      Імпортувати",
-      "settings": "      Налаштування"
+      "light_theme": "      Light mode UKR",
+      "dark_theme": "      Night mode UKR",
+      "add": "      Add Lesson",
+      "export_csv": "      Export",
+      "import_csv": "      Import",
+      "settings": "      Settings"
+    },
+    "settings": {
+      "title": "Settings",
+      "theme": "Choose Theme",
+      "View Mode": "Schedule View",
+      "language": "Choose Language",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "notifications": "Enable Notifications",
+      "yes": "Yes",
+      "no": "No",
+      "cancel": "Cancel",
+      "save": "Save"
     }
   }
 }

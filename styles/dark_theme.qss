@@ -10,6 +10,8 @@ QWidget {
 
 QLabel {
     color: #d0d0d0;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 QPushButton {
@@ -20,6 +22,7 @@ QPushButton {
     border: none;
     text-align: center;
     font-size: 14px;
+    width: 100%;
 }
 
 QPushButton:hover {
@@ -28,23 +31,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
     background-color: #5c5c5c;
-}
-
-QPushButton#sidebarButton {
-    width: 150px;
-    padding-left: 10px;
-    min-height: 40px;
-    font-size: 14px;
-    background-color: #303030;
-    border: none;
-}
-
-QPushButton#sidebarButton:hover {
-    background-color: #454545;
-}
-
-QPushButton#sidebarButton:pressed {
-    background-color: #5a5a5a;
 }
 
 QToolButton#sidebarButton {
@@ -196,4 +182,18 @@ QIcon {
 }
 #themeSwitch::indicator:unchecked::text {
     color: #999;
+}
+
+QPushButton#optionButton {
+    background-color: #313131;
+    border-radius: 4px;
+    font-weight: normal;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+QPushButton#optionButton:checked {
+    background-color: #454545;
+    color: white;
+    border-color: #007ba0;
 }

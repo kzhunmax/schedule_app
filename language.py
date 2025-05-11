@@ -1,12 +1,11 @@
 import json
-import os
 from settings import load_language
 
 _translations = {}
 
 def load_translations():
     global _translations
-    lang_code = load_language()  # returns 'en', 'ukr', 'pl' тощо
+    lang_code = load_language()  # returns 'en', 'ukr', 'pl'
     lang_file = f"locales/{lang_code}.json"
 
     try:

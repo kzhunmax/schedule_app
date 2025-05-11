@@ -20,3 +20,8 @@ def save_notifications(enabled):
 def load_notifications():
     return SETTINGS.value("notifications", True, type=bool)
 
+def save_view_mode(mode):
+    SETTINGS.setValue("view_mode", mode)
+
+def load_view_mode():
+    return SETTINGS.value("view_mode", "daily")
