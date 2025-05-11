@@ -57,6 +57,11 @@
       "friday": "Friday",
       "saturday": "Saturday",
       "sunday": "Sunday"
+    },
+    "time_dialog": {
+      "title": "Select Time",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   }
 }

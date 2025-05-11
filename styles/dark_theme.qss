@@ -97,6 +97,9 @@ QDialog {
 
 QComboBox::drop-down {
     background-color: transparent;
+    width: 0px;
+    padding: 0px;
+    border: none;
 }
 
 QComboBox QAbstractItemView {
@@ -163,10 +166,6 @@ QPushButton#optionButton:checked {
     color: white;
 }
 
-QPushButton[checkable="true"] {
-    border: 2px solid transparent;
-}
-
 QPushButton[checkable="true"]:checked {
-    border: 2px solid #ffffff;
+    border: 1px solid #ffffff;
 }

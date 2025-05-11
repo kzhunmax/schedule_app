@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import (
 )
 from models import Lesson
 from language import tr
+from ui.time_picker_dialog import TimePickerDialog
+
 
 class LessonDialog(QDialog):
     COLORS = ["#00a7e5", "#14142b", "#e40173", "#6308f7", "#ff7f08", "#44d6df", "#b1cb49"]
@@ -32,14 +34,6 @@ class LessonDialog(QDialog):
 
         # Subject
         self.subject_input = QLineEdit(self.lesson.subject)
-
-        # Start time
-        self.start_time_input = QLineEdit(self.lesson.start_time)
-        self.start_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
-
-        # End time
-        self.end_time_input = QLineEdit(self.lesson.end_time)
-        self.end_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
 
         # Type: Online / Offline (кнопки з вибором)
         self.online_btn = QPushButton(tr("app.lesson_dialog.type_online"))
@@ -74,19 +68,44 @@ class LessonDialog(QDialog):
         # Room
         self.room_input = QLineEdit(self.lesson.room)
 
+        # Start time
+        self.start_time_input = QLineEdit(self.lesson.start_time)
+        self.pick_start_time_btn = QPushButton("...")
+        self.start_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
+        self.pick_start_time_btn.setFixedSize(30, 30)
+        self.pick_start_time_btn.clicked.connect(self.pick_start_time)
+
+        # End time
+        self.end_time_input = QLineEdit(self.lesson.end_time)
+        self.pick_end_time_btn = QPushButton("...")
+        self.end_time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
+        self.pick_end_time_btn.setFixedSize(30, 30)
+        self.pick_end_time_btn.clicked.connect(self.pick_end_time)
+
+
         # Layout widgets
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_day")))
         layout.addWidget(self.day_combo)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_subject")))
         layout.addWidget(self.subject_input)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_start_time")))
-        layout.addWidget(self.start_time_input)
+        # layout.addWidget(self.start_time_input)
+        start_time_layout = QHBoxLayout()
+        start_time_layout.addWidget(self.start_time_input)
+        start_time_layout.addWidget(self.pick_start_time_btn)
+        layout.addLayout(start_time_layout)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_end_time")))
-        layout.addWidget(self.end_time_input)
+        # layout.addWidget(self.end_time_input)
+        end_time_layout = QHBoxLayout()
+        end_time_layout.addWidget(self.end_time_input)
+        end_time_layout.addWidget(self.pick_end_time_btn)
+        layout.addLayout(end_time_layout)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_type")))
         layout.addWidget(self.type_button_group)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_room")))
         layout.addWidget(self.room_input)
+
+
 
         # --- Вибір кольору ---
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_color")))
@@ -98,11 +117,23 @@ class LessonDialog(QDialog):
         for color in self.COLORS:
             btn = QPushButton()
             btn.setFixedSize(30, 30)
-            btn.setStyleSheet(f"background-color: {color}; border-radius: 15px;")
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 15px;
+                    background-color: rgba({self.hex_to_rgba(color, opacity=0.2)});
+                    border: 2px solid {color};
+                }}
+                QPushButton:checked {{
+                    background-color: {color};
+                }}
+            """)
             btn.setCheckable(True)
             btn.setToolTip(color)
             self.color_button_group.addButton(btn)
             color_layout.addWidget(btn)
+
 
         layout.addLayout(color_layout)
 
@@ -117,6 +148,25 @@ class LessonDialog(QDialog):
         layout.addLayout(btn_layout)
 
         self.setLayout(layout)
+        self.update_color_buttons()
+
+    @staticmethod
+    def hex_to_rgba(hex_color, opacity=1.0):
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        return f"{r}, {g}, {b}, {opacity}"
+
+    def pick_start_time(self):
+        dialog = TimePickerDialog(self.start_time_input.text(), self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.start_time_input.setText(dialog.get_time())
+
+    def pick_end_time(self):
+        dialog = TimePickerDialog(self.end_time_input.text(), self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.end_time_input.setText(dialog.get_time())
 
     def update_color_buttons(self):
         for button in self.color_button_group.buttons():
