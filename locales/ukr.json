@@ -30,9 +30,11 @@
       "json": "Експортувати як JSON"
     },
     "import": {
-      "title": "Імпорт розкладу",
-      "instructions": "Перетягніть файл .csv або .json сюди",
-      "unsupported_format": "Непідтримуваний формат. Використовуйте .csv або .json."
+      "title": "Import Schedule",
+      "instructions": "Drag and drop a .csv or .json file here",
+      "unsupported_format": "Unsupported format. Please use .csv or .json.",
+      "csv_failed": "Failed to load CSV file.",
+      "json_failed": "Failed to load JSON file."
     },
     "lesson_dialog": {
       "title": "Додати/Редагувати заняття",

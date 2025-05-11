@@ -32,7 +32,9 @@
     "import": {
       "title": "Import Schedule",
       "instructions": "Drag and drop a .csv or .json file here",
-      "unsupported_format": "Unsupported file format. Please use .csv or .json."
+      "unsupported_format": "Unsupported format. Please use .csv or .json.",
+      "csv_failed": "Failed to load CSV file.",
+      "json_failed": "Failed to load JSON file."
     },
     "lesson_dialog": {
       "title": "Add/Edit Lesson",

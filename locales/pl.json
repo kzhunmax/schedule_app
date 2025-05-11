@@ -30,9 +30,11 @@
       "json": "Eksportuj jako JSON"
     },
     "import": {
-      "title": "Importuj plan",
-      "instructions": "Upuść plik .csv lub .json tutaj",
-      "unsupported_format": "Nieobsługiwany format. Proszę użyć .csv lub .json."
+      "title": "Import Schedule",
+      "instructions": "Drag and drop a .csv or .json file here",
+      "unsupported_format": "Unsupported format. Please use .csv or .json.",
+      "csv_failed": "Failed to load CSV file.",
+      "json_failed": "Failed to load JSON file."
     },
     "lesson_dialog": {
       "title": "Dodaj/Zmień zajęcia",
