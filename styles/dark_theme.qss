@@ -12,6 +12,7 @@ QLabel {
     color: #d0d0d0;
     font-size: 18px;
     font-weight: bold;
+    border: none;
 }
 
 QPushButton {
@@ -72,6 +73,17 @@ QScrollBar:vertical {
 QScrollBar::handle:vertical {
     background-color: #5a5a5a;
     min-height: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar:horizontal {
+    background-color: #2b2b2b;
+    height: 10px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #5a5a5a;
+    min-width: 20px;
     border-radius: 5px;
 }
 
@@ -176,4 +188,65 @@ Notification {
     font-size: 14px;
     border-radius: 8px;
     padding: 5px 10px;
+}
+
+ScheduleBlock {
+    background-color: #3a3a3a;
+    border-radius: 4px;
+    margin: 2px;
+    padding: 5px;
+}
+
+GridBackground {
+    background-color: transparent;
+}
+
+QMenu {
+    background-color: #3a3a3a;
+    border-radius: 8px;
+    padding: 8px 0 0 8px;
+    color: #ffffff;
+    border: 1px solid #4a4a4a;
+    font-size: 14px;
+    min-width: 180px;
+}
+
+QMenu::item {
+    padding: 8px 8px 8px 8px;
+    margin: 2px 6px;
+    border-radius: 4px;
+    background-color: transparent;
+    spacing: 12px;
+}
+
+QMenu::item:selected {
+    background-color: #5c5c5c;
+    color: #ffffff;
+}
+
+QMenu::item:disabled {
+    color: #777777;
+    background-color: transparent;
+}
+
+QMenu::item:selected:disabled {
+    background-color: #4a4a4a;
+    color: #777777;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #4a4a4a;
+    margin: 6px 8px;
+}
+
+QMenu::icon {
+    padding-left: 8px;  /* additional icon padding */
+    width: 20px;
+    height: 20px;
+}
+
+QMenu::indicator {
+    width: 16px;
+    height: 16px;
 }

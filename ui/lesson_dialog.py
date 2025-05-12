@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit,
-    QPushButton, QHBoxLayout, QComboBox, QFrame, QButtonGroup
+    QPushButton, QHBoxLayout, QComboBox, QFrame, QButtonGroup, QMessageBox
 )
 from models import Lesson
 from language import tr
@@ -32,7 +32,7 @@ class LessonDialog(QDialog):
         if self.lesson.day:
             self.day_combo.setCurrentText(tr(f"app.days.{self.lesson.day.lower()}"))
 
-        # Subject
+        # Subject - no restrictions on language
         self.subject_input = QLineEdit(self.lesson.subject)
 
         # Type: Online / Offline (кнопки з вибором)
@@ -82,7 +82,6 @@ class LessonDialog(QDialog):
         self.pick_end_time_btn.setFixedSize(30, 30)
         self.pick_end_time_btn.clicked.connect(self.pick_end_time)
 
-
         # Layout widgets
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_day")))
         layout.addWidget(self.day_combo)
@@ -102,8 +101,6 @@ class LessonDialog(QDialog):
         layout.addWidget(self.type_button_group)
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_room")))
         layout.addWidget(self.room_input)
-
-
 
         # --- Вибір кольору ---
         layout.addWidget(QLabel(tr("app.lesson_dialog.label_color")))
@@ -132,14 +129,13 @@ class LessonDialog(QDialog):
             self.color_button_group.addButton(btn)
             color_layout.addWidget(btn)
 
-
         layout.addLayout(color_layout)
 
         # Buttons
         btn_layout = QHBoxLayout()
         save_btn = QPushButton(tr("app.lesson_dialog.save"))
         cancel_btn = QPushButton(tr("app.lesson_dialog.cancel"))
-        save_btn.clicked.connect(self.accept)
+        save_btn.clicked.connect(self.validate_and_accept)
         cancel_btn.clicked.connect(self.reject)
         btn_layout.addWidget(save_btn)
         btn_layout.addWidget(cancel_btn)
@@ -174,6 +170,88 @@ class LessonDialog(QDialog):
         else:
             self.color_button_group.buttons()[0].setChecked(True)
 
+    def validate_and_accept(self):
+        """Validate inputs before accepting the dialog"""
+        # Отримуємо та нормалізуємо час
+        start_time = self.normalize_time(self.start_time_input.text().strip())
+        end_time = self.normalize_time(self.end_time_input.text().strip())
+
+        subject = self.subject_input.text().strip()
+
+        # Оновлюємо поля вводу з нормалізованим часом
+        self.start_time_input.setText(start_time)
+        self.end_time_input.setText(end_time)
+
+        # Перевірка на пусте поле предмету
+        if not subject:
+            self.parent().show_notification(tr("app.lesson_dialog.error_empty_subject"))
+            return
+
+        # Check if times are empty
+        if not start_time or not end_time:
+            self.parent().show_notification(tr("app.lesson_dialog.error_time_required"))
+            return
+
+        # Validate time formats
+        if not self.validate_time_format(start_time):
+            self.parent().show_notification(tr("app.lesson_dialog.error_invalid_start_time"))
+            return
+
+        if not self.validate_time_format(end_time):
+            self.parent().show_notification(tr("app.lesson_dialog.error_invalid_end_time"))
+            return
+
+        # Check if start time equals end time
+        if start_time == end_time:
+            self.parent().show_notification(tr("app.lesson_dialog.error_same_times"))
+            return
+
+        # Check if end time is before start time
+        if self.time_to_minutes(end_time) <= self.time_to_minutes(start_time):
+            self.parent().show_notification(tr("app.lesson_dialog.error_end_before_start"))
+            return
+
+        # If all validations pass, accept the dialog
+        self.accept()
+
+    def normalize_time(self, time_str):
+        """Додає ведучі нулі до часу (9:00 -> 09:00)"""
+        if not time_str or ':' not in time_str:
+            return time_str
+
+        hours, minutes = time_str.split(':')
+        return f"{hours.zfill(2)}:{minutes.zfill(2)}"
+
+    def time_to_minutes(self, time_str):
+        """Конвертує час у форматі HH:MM у кількість хвилин"""
+        hours, minutes = map(int, time_str.split(':'))
+        return hours * 60 + minutes
+
+    def validate_time_format(self, time_str):
+        """Validate time format (HH:MM)"""
+        if not time_str:
+            return False
+
+        # Перевіряємо чи є рівно одна двокрапка
+        if time_str.count(':') != 1:
+            return False
+
+        hours, minutes = time_str.split(':')
+
+        # Перевіряємо чи є ведучий нуль для годин < 10
+        if len(hours) < 2 or (hours[0] == '0' and len(hours) > 2):
+            return False
+
+        # Перевіряємо чи є ведучий нуль для хвилин < 10
+        if len(minutes) != 2:
+            return False
+
+        try:
+            hours_int = int(hours)
+            minutes_int = int(minutes)
+            return 0 <= hours_int <= 23 and 0 <= minutes_int <= 59
+        except ValueError:
+            return False
 
     def get_data(self):
         selected_button = self.color_button_group.checkedButton()

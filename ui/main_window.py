@@ -13,7 +13,7 @@ from ui.import_dialog import ImportDialog
 from ui.lesson_dialog import LessonDialog
 from settings import save_theme, load_theme, load_language, load_notifications
 from ui.settings_dialog import SettingsDialog
-from ui.schedule_view import ScheduleView
+from ui.schedule_view import ScheduleView, ScheduleWidget
 from language import set_language, tr, load_translations
 
 
@@ -22,14 +22,13 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle(tr("app.title"))
         self.setGeometry(100, 50, 1280, 720)
+        self.setMinimumSize(1280, 720)
         self.load_current_theme()
         self.setWindowIcon(QIcon("images/icon.png"))
 
         self.notification = Notification(self)
         self.notification.hide()
-
         self.icon_buttons = []
-
         load_translations()
 
         # Порядок мов і їх коди
@@ -46,7 +45,7 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        self.schedule_view = ScheduleView()
+        self.schedule_widget = ScheduleWidget()
 
         sidebar = QVBoxLayout()
         sidebar.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -73,7 +72,7 @@ class MainWindow(QMainWindow):
         right_frame = QFrame()
         right_frame.setFrameShape(QFrame.Shape.StyledPanel)
         right_layout = QVBoxLayout(right_frame)
-        right_layout.addWidget(self.schedule_view)
+        right_layout.addWidget(self.schedule_widget)
 
         main_layout.addWidget(sidebar_frame)
         main_layout.addWidget(right_frame)
@@ -154,7 +153,7 @@ class MainWindow(QMainWindow):
         conn.close()
 
         lessons = [Lesson(*row) for row in rows]
-        self.schedule_view.set_lessons(lessons)
+        self.schedule_widget.set_lessons(lessons)
 
     def add_lesson(self):
         dialog = LessonDialog(parent=self)

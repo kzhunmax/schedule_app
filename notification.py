@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QApplication
 from PyQt6.QtCore import QTimer, QPropertyAnimation
 from PyQt6.QtCore import Qt
 
@@ -37,7 +37,6 @@ class Notification(QWidget):
         self.animation_out = None
 
     def show_message(self, message, success=False, duration=3000):
-        # Оновлюємо колір фону
         bg_color = "#2ecc71" if success else "#e74c3c"
         self.content.setStyleSheet(f"""
             background-color: {bg_color};
@@ -57,9 +56,10 @@ class Notification(QWidget):
 
         self.setup_position()
 
-        # --- Анімація появи ---
-        from PyQt6.QtCore import QPropertyAnimation
+        self.adjustSize()
+        QApplication.processEvents()
 
+        self.setup_position()
         self.setWindowOpacity(0.0)
         self.show()
         self.raise_()

@@ -11,10 +11,10 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS lessons (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            day TEXT,
-            subject TEXT,
-            start_time TEXT,
-            end_time TEXT,
+            day TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            start_time TEXT NOT NULL,
+            end_time TEXT NOT NULL,
             type TEXT,
             room TEXT,
             color TEXT DEFAULT '#00a7e5'

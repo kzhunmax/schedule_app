@@ -7,7 +7,7 @@ class Lesson:
         self.end_time = end_time
         self.type = lesson_type
         self.room = room
-        self.color = color or "#00a7e5"
+        self.color = color
 
     def to_dict(self):
         return {

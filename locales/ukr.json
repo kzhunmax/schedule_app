@@ -44,7 +44,7 @@
       "unsupported_format": "Unsupported format. Please use .csv or .json."
     },
     "lesson_dialog": {
-      "title": "Додати/Редагувати заняття",
+      "title": "Додати заняття",
       "label_day": "День:",
       "label_subject": "Предмет:",
       "label_start_time": "Час початку:",
@@ -56,7 +56,15 @@
       "type_offline": "Офлайн",
       "save": "Зберегти",
       "cancel": "Скасувати",
-      "label_color": "Обери Колір:"
+      "label_color": "Обери Колір:",
+      "validation_error": "Помилка валідації",
+      "error_time_required": "Будь ласка, вкажіть час початку та закінчення заняття",
+      "error_invalid_start_time": "Невірний формат часу початку. Використовуйте формат ГГ:ХХ (наприклад, 09:30)",
+      "error_invalid_end_time": "Невірний формат часу закінчення. Використовуйте формат ГГ:ХХ (наприклад, 11:20)",
+      "error_same_times": "Час початку та закінчення не можуть співпадати",
+      "error_end_before_start": "Час закінчення повинен бути пізніше часу початку",
+      "error_invalid_time_format": "Використовуйте формат HH:MM з ведучими нулями (наприклад, 09:00)",
+      "error_empty_subject": "Назва предмету не може бути пустою"
     },
     "days": {
       "monday": "Понеділок",
@@ -66,6 +74,10 @@
       "friday": "П’ятниця",
       "saturday": "Субота",
       "sunday": "Неділя"
+    },
+    "schedule": {
+      "room_label": "Room:",
+      "room_not_specified": "not specified"
     },
     "time_dialog": {
       "title": "Годинник",
