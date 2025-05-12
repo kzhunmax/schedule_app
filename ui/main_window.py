@@ -7,6 +7,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 from database import DB_PATH
 from models import Lesson
+from notification import Notification
 from ui.export_dialog import ExportDialog
 from ui.import_dialog import ImportDialog
 from ui.lesson_dialog import LessonDialog
@@ -20,9 +21,12 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Schedule Planner")
-        self.setGeometry(100, 100, 1200, 700)
+        self.setGeometry(100, 50, 1280, 720)
         self.load_current_theme()
         self.setWindowIcon(QIcon("images/icon.png"))
+
+        self.notification = Notification(self)
+        self.notification.hide()
 
         self.icon_buttons = []
 
@@ -235,3 +239,6 @@ class MainWindow(QMainWindow):
     def open_import_dialog(self):
         dialog = ImportDialog(self)
         dialog.exec()
+
+    def show_notification(self, message, success=False, duration=3000):
+        self.notification.show_message(message, success, duration)

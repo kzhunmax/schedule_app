@@ -51,14 +51,19 @@ class ImportDialog(QDialog):
             if lessons:
                 self.parent.bulk_insert_lessons(lessons)
                 self.accept()
+                self.parent.show_notification(tr("app.import.csv_success"), success=True)
             else:
                 self.label.setText(tr("app.import.csv_failed"))
+                self.parent.show_notification(tr("app.import.csv_failed"), success=False)
         elif file_path.endswith(".json"):
             lessons = import_from_json(file_path)
             if lessons:
                 self.parent.bulk_insert_lessons(lessons)
                 self.accept()
+                self.parent.show_notification(tr("app.import.json_success"), success=True)
             else:
                 self.label.setText(tr("app.import.json_failed"))
+                self.parent.show_notification(tr("app.import.json_failed"), success=False)
         else:
             self.label.setText(tr("app.import.unsupported_format"))
+            self.parent.show_notification(tr("app.import.unsupported_format"), success=False)

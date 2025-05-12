@@ -151,6 +151,7 @@ class SettingsDialog(QDialog):
 
     def accept(self):
         self.save_settings()
+        self.parent.show_notification(tr("app.settings.saved"), success=True)
         super().accept()
 
     def save_settings(self):

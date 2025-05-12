@@ -170,3 +170,19 @@ QPushButton[checkable="true"] {
 QPushButton[checkable="true"]:checked {
     border: 2px solid #000000;
 }
+
+Notification {
+    background-color: #f0f0f0;
+    color: #333333;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+Notification QPushButton {
+    color: #999;
+}
+
+Notification QPushButton:hover {
+    color: #333;
+}

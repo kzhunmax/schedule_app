@@ -36,8 +36,13 @@ class ExportDialog(QDialog):
         conn.close()
 
         lessons = [Lesson(*row) for row in rows]
-        export_to_csv(lessons, self)
-        self.accept()
+
+        success = export_to_csv(lessons, self)
+        if success:
+            self.parent().show_notification(tr("app.export.csv_success"), success=True)
+            self.accept()
+        else:
+            self.parent().show_notification(tr("app.export.csv_failed"))
 
     def export_as_json(self):
         conn = sqlite3.connect(DB_PATH)
@@ -47,5 +52,10 @@ class ExportDialog(QDialog):
         conn.close()
 
         lessons = [Lesson(*row) for row in rows]
-        export_to_json(lessons, self)
-        self.accept()
+
+        success = export_to_json(lessons, self)
+        if success:
+            self.parent().show_notification(tr("app.export.json_success"), success=True)
+            self.accept()
+        else:
+            self.parent().show_notification(tr("app.export.json_failed"))

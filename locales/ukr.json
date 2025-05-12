@@ -22,19 +22,26 @@
       "cancel": "Скасувати",
       "save": "Зберегти",
       "dark": "Темна",
-      "light": "Світла"
+      "light": "Світла",
+      "saved": "Settings saved!"
     },
     "export": {
-      "title": "Експорт розкладу",
-      "csv": "Експортувати як CSV",
-      "json": "Експортувати як JSON"
+      "title": "Export Schedule",
+      "csv": "Export as CSV",
+      "json": "Export as JSON",
+      "csv_success": "Successfully exported to CSV",
+      "json_success": "Successfully exported to JSON",
+      "csv_failed": "Error exporting to CSV",
+      "json_failed": "Error exporting to JSON"
     },
     "import": {
       "title": "Import Schedule",
       "instructions": "Drag and drop a .csv or .json file here",
-      "unsupported_format": "Unsupported format. Please use .csv or .json.",
+      "csv_success": "CSV file imported successfully!",
+      "json_success": "JSON file imported successfully!",
       "csv_failed": "Failed to load CSV file.",
-      "json_failed": "Failed to load JSON file."
+      "json_failed": "Failed to load JSON file.",
+      "unsupported_format": "Unsupported format. Please use .csv or .json."
     },
     "lesson_dialog": {
       "title": "Додати/Редагувати заняття",
