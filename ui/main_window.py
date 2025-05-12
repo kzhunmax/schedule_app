@@ -11,7 +11,7 @@ from notification import Notification
 from ui.export_dialog import ExportDialog
 from ui.import_dialog import ImportDialog
 from ui.lesson_dialog import LessonDialog
-from settings import save_theme, load_theme, load_language
+from settings import save_theme, load_theme, load_language, load_notifications
 from ui.settings_dialog import SettingsDialog
 from ui.schedule_view import ScheduleView
 from language import set_language, tr, load_translations
@@ -20,7 +20,7 @@ from language import set_language, tr, load_translations
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Schedule Planner")
+        self.setWindowTitle(tr("app.title"))
         self.setGeometry(100, 50, 1280, 720)
         self.load_current_theme()
         self.setWindowIcon(QIcon("images/icon.png"))
@@ -241,4 +241,6 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def show_notification(self, message, success=False, duration=3000):
+        if not load_notifications():
+            return
         self.notification.show_message(message, success, duration)

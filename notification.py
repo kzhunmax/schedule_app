@@ -86,7 +86,6 @@ class Notification(QWidget):
             self.move(x, y)
 
     def hide(self):
-        # Якщо анімація ще не завершена — припинимо її
         if self.animation_in and self.animation_in.state() == QPropertyAnimation.State.Running:
             self.animation_in.stop()
         super().hide()

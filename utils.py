@@ -7,7 +7,7 @@ from models import Lesson
 def export_to_csv(lessons, parent=None):
     file_path, _ = QFileDialog.getSaveFileName(parent, "Save CSV", "", "CSV Files (*.csv)")
     if not file_path:
-        return False  # скасовано користувачем
+        return None
 
     try:
         with open(file_path, 'w', newline='', encoding='utf-8') as f:
@@ -32,7 +32,7 @@ def export_to_csv(lessons, parent=None):
 def export_to_json(lessons, parent=None):
     file_path, _ = QFileDialog.getSaveFileName(parent, "Save JSON", "", "JSON Files (*.json)")
     if not file_path:
-        return False
+        return None
 
     try:
         data = [lesson.to_dict() for lesson in lessons]
