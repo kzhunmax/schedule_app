@@ -139,15 +139,40 @@ class ScheduleView(QScrollArea):
 
         day_width = self.min_day_width
 
+        # Створюємо словники для всіх підтримуваних мов
+        day_translations = {
+            'en': ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+            'uk': ["понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота", "неділя"],
+            'pl': ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
+        }
+
+        # Створюємо обернений словник для швидкого пошуку
+        reverse_day_mapping = {}
+        for lang, days in day_translations.items():
+            for idx, day in enumerate(days):
+                # Приводимо до нижнього регістру для уніфікованого порівняння
+                normalized_day = day.lower()
+                if normalized_day not in reverse_day_mapping:
+                    reverse_day_mapping[normalized_day] = idx
+
         for lesson in self.lessons:
-            if lesson.start_time not in self.HOURS:
-                continue
             try:
-                try:
-                    col_index = self.DAYS.index(lesson.day) + 1
-                except ValueError:
+                # Нормалізуємо назву дня з уроку
+                lesson_day = lesson.day.lower().strip()
+
+                # Знаходимо індекс дня за допомогою оберненого словника
+                day_index = reverse_day_mapping.get(lesson_day)
+                if day_index is None:
+                    continue  # Пропускаємо, якщо день не розпізнано
+
+                col_index = day_index + 1  # +1 тому що перша колонка - це час
+
+                # Решта логіки залишається незмінною
+                start_hour = lesson.start_time.split(':')[0].zfill(2) + ":00"
+                if start_hour not in self.HOURS:
                     continue
-                row_index = self.HOURS.index(lesson.start_time)
+
+                row_index = self.HOURS.index(start_hour)
 
                 start_h, start_m = map(int, lesson.start_time.split(':'))
                 end_h, end_m = map(int, lesson.end_time.split(':'))

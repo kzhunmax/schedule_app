@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "day": "Poniedziałek",
+        "subject": "AA",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "type": "Online",
+        "room": "214",
+        "color": "#00a7e5"
+    },
+    {
+        "id": 1,
+        "day": "Poniedziałek",
+        "subject": "AA",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "type": "Online",
+        "room": "214",
+        "color": "#00a7e5"
+    }
+]

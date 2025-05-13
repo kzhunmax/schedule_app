@@ -41,7 +41,8 @@
       "json_success": "JSON file imported successfully!",
       "csv_failed": "Failed to load CSV file.",
       "json_failed": "Failed to load JSON file.",
-      "unsupported_format": "Unsupported format. Please use .csv or .json."
+      "unsupported_format": "Unsupported format. Please use .csv or .json.",
+      "file_corrupted": "Файл пошкоджено або містить некоректні дані"
     },
     "lesson_dialog": {
       "title": "Додати заняття",

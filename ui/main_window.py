@@ -13,7 +13,7 @@ from ui.import_dialog import ImportDialog
 from ui.lesson_dialog import LessonDialog
 from settings import save_theme, load_theme, load_language, load_notifications
 from ui.settings_dialog import SettingsDialog
-from ui.schedule_view import ScheduleView, ScheduleWidget
+from ui.schedule_view import ScheduleWidget
 from language import set_language, tr, load_translations
 
 
@@ -129,6 +129,7 @@ class MainWindow(QMainWindow):
         set_language(lang_code)
         self.update_language_button_text()
         self.update_ui_texts()
+        self.schedule_widget.refresh_translation()
 
     def update_language_button_text(self):
         lang_name, _ = self.languages[self.current_language_index]
@@ -176,28 +177,29 @@ class MainWindow(QMainWindow):
         pass
 
     def bulk_insert_lessons(self, lessons):
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM lessons")
+        try:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM lessons")
+                for lesson in lessons:
+                    cursor.execute("""
+                        INSERT INTO lessons (id, day, subject, start_time, end_time, type, room, color)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        lesson.id,
+                        lesson.day,
+                        lesson.subject,
+                        lesson.start_time,
+                        lesson.end_time,
+                        lesson.type,
+                        lesson.room,
+                        lesson.color
+                    ))
+                conn.commit()
+                self.load_lessons()
+        except Exception:
+            self.parent.show_notification(tr("app.import.file_corrupted"), success=False)
 
-        for lesson in lessons:
-            cursor.execute("""
-                    INSERT INTO lessons (id, day, subject, start_time, end_time, type, room, color)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                lesson.id,
-                lesson.day,
-                lesson.subject,
-                lesson.start_time,
-                lesson.end_time,
-                lesson.type,
-                lesson.room,
-                lesson.color
-            ))
-
-        conn.commit()
-        conn.close()
-        self.load_lessons()
 
     def load_current_theme(self):
         current_theme = load_theme()
@@ -230,6 +232,7 @@ class MainWindow(QMainWindow):
         self.update_language_button_text()
         self.update_ui_texts()
         self.update_all_button_icons()
+        self.schedule_widget.refresh_translation()
 
     def open_export_dialog(self):
         dialog = ExportDialog(self)
