@@ -163,9 +163,9 @@ class MainWindow(QMainWindow):
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
             cursor.execute("""
-                    INSERT INTO lessons (day, subject, start_time, end_time, type, room)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """, (lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room))
+                    INSERT INTO lessons (day, subject, start_time, end_time, type, room, color)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (lesson.day, lesson.subject, lesson.start_time, lesson.end_time, lesson.type, lesson.room, lesson.color))
             conn.commit()
             conn.close()
             self.load_lessons()
@@ -197,8 +197,9 @@ class MainWindow(QMainWindow):
                     ))
                 conn.commit()
                 self.load_lessons()
+
         except Exception:
-            self.parent.show_notification(tr("app.import.file_corrupted"), success=False)
+            self.parent.show_notification(tr("app.import.file_corrupted"))
 
 
     def load_current_theme(self):

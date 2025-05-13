@@ -45,14 +45,14 @@ class ScheduleBlock(QFrame):
         super().__init__()
         self.lesson = lesson
         self.setFixedHeight(40)
-        self.setStyleSheet("""
-            background-color: #3a3a3a;
+        color = lesson.color if lesson.color else "#3a3a3a"
+
+        self.setStyleSheet(f"""
+            background-color: {color};
             border-radius: 4px;
             margin: 2px;
-            color: white;
             padding: 5px;
         """)
-
         layout = QVBoxLayout()
         layout.setContentsMargins(5, 2, 5, 2)
         layout.setSpacing(0)
@@ -70,7 +70,7 @@ class ScheduleBlock(QFrame):
 
 
 class ScheduleView(QScrollArea):
-    HOURS = [f"{hour:02d}:{minute:02d}" for hour in range(0, 24) for minute in (0, 30)]
+    HOURS = [f"{hour:02d}:00" for hour in range(0, 24)]
 
     @property
     def DAYS(self):
