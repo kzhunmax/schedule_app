@@ -1,3 +1,4 @@
 .idea
 __pycache__
-data/schedule.db
+src/data/schedule.db
+src/schedule_app.egg-info

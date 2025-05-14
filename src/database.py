@@ -1,10 +1,16 @@
+"""
+Ініціалізація бази даних
+"""
+
 import sqlite3
 import os
 
-DB_PATH = os.path.join("data", "schedule.db")
+
+DB_PATH = os.path.join("src/data", "schedule.db")
 
 
-def init_db():
+def init_db() -> None:
+    """Ініціалізує базу даних, створюючи таблицю lessons, якщо її немає."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()

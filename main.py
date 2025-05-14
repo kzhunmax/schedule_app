@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication
-from database import init_db
-from ui.main_window import MainWindow
+from src.database import init_db
+from src.ui.main_window import MainWindow
 import sys
 
 if __name__ == "__main__":

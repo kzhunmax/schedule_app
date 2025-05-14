@@ -1,0 +1,38 @@
+[project]
+name = "schedule_app"
+version = "0.1.0"
+description = "My PyQt6 application"
+authors = [
+    { name="Maksym", email="korshunmax80@gmail.com" }
+]
+dependencies = [
+    "PyQt6>=6.9.0"
+]
+
+# Додаткові залежності (для розробки/тестування)
+[project.optional-dependencies]
+dev = [
+    "flake8>=5.0.0",
+    "pylint>=2.15.0",
+    "mypy>=0.990"
+]
+
+[build-system]
+requires = ["setuptools>=80.3.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.coverage.run]
+source = ["src"]
+
+# Налаштування mypy
+[tool.mypy]
+python_version = 3.13
+strict = true
+
+# Налаштування flake8
+[tool.flake8]
+max-line-length = 120
+exclude = [".git", "__pycache__", "migrations"]
