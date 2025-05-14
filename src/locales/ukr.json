@@ -45,7 +45,7 @@
       "file_corrupted": "Файл пошкоджено або містить некоректні дані"
     },
     "lesson_dialog": {
-      "title": "Додати заняття",
+      "add_title": "Додати заняття",
       "label_day": "День:",
       "label_subject": "Предмет:",
       "label_start_time": "Час початку:",
@@ -67,7 +67,9 @@
       "error_same_times": "Час початку та закінчення не можуть співпадати",
       "error_end_before_start": "Час закінчення повинен бути пізніше часу початку",
       "error_invalid_time_format": "Використовуйте формат HH:MM з ведучими нулями (наприклад, 09:00)",
-      "error_empty_subject": "Назва предмету не може бути пустою"
+      "error_empty_subject": "Назва предмету не може бути пустою",
+      "delete": "Delete",
+      "edit_title": "Edit lesson"
     },
     "days": {
       "monday": "Понеділок",
@@ -80,7 +82,8 @@
     },
     "schedule": {
       "room_label": "Room:",
-      "room_not_specified": "not specified"
+      "room_not_specified": "not specified",
+      "type_label": "Type:"
     },
     "time_dialog": {
       "title": "Годинник",

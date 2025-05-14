@@ -45,7 +45,7 @@
       "file_corrupted": "Файл пошкоджено або містить некоректні дані"
     },
     "lesson_dialog": {
-      "title": "Add Lesson",
+      "add_title": "Add Lesson",
       "label_day": "Day:",
       "label_subject": "Subject:",
       "label_start_time": "Start Time:",
@@ -67,7 +67,9 @@
       "error_same_times": "Start time and end time cannot be the same",
       "error_end_before_start": "End time must be later than start time",
       "error_invalid_time_format": "Use HH:MM format with leading zeros (e.g. 09:00)",
-      "error_empty_subject": "Subject name cannot be empty"
+      "error_empty_subject": "Subject name cannot be empty",
+      "delete": "Delete",
+      "edit_title": "Edit lesson"
     },
     "days": {
       "monday": "Monday",
@@ -80,7 +82,8 @@
     },
     "schedule": {
       "room_label": "Room:",
-      "room_not_specified": "not specified"
+      "room_not_specified": "not specified",
+      "type_label": "Type:"
     },
     "time_dialog": {
       "title": "Select Time",

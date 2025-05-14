@@ -46,7 +46,7 @@ class LessonDialog(QDialog):
 
     def _init_ui(self) -> None:
         """Ініціалізація інтерфейсу користувача."""
-        self.setWindowTitle(tr("app.lesson_dialog.title"))
+        self.setWindowTitle(tr("app.lesson_dialog.add_title"))
         self.setMinimumSize(self.MIN_DIALOG_WIDTH, self.MIN_DIALOG_HEIGHT)
 
         main_layout = QVBoxLayout()

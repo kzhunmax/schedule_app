@@ -1,17 +1,6 @@
-"""
-Віджет для відображення розкладу занять у вигляді сітки.
-
-Містить:
-- Фон у вигляді сітки з годинами та днями тижня
-- Блоки уроків з інформацією про предмет та аудиторію
-- Підтримку різних мов інтерфейсу
-- Можливість оновлення даних
-"""
-from typing import Any
-
 from PyQt6.QtWidgets import (
     QFrame, QVBoxLayout, QLabel, QScrollArea,
-    QGridLayout, QWidget, QHBoxLayout
+    QGridLayout, QWidget, QHBoxLayout, QSizePolicy
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter, QColor
@@ -20,22 +9,10 @@ from src.signals import app_signals
 
 
 class GridBackground(QWidget):
-    """Віджет для відображення фонової сітки розкладу."""
-
     def __init__(self, hours: list, days: list,
-                 time_slot_height: int = 40,
-                 day_header_width: int = 80,
+                 time_slot_height: int = 60,
+                 day_header_width: int = 100,
                  parent=None):
-        """
-        Ініціалізація сітки.
-
-        Args:
-            hours: Список годин для відображення
-            days: Список днів тижня
-            time_slot_height: Висота одного часового проміжку
-            day_header_width: Ширина заголовка з годинами
-            parent: Батьківський віджет
-        """
         super().__init__(parent)
         self.hours = hours
         self.days = days
@@ -44,84 +21,114 @@ class GridBackground(QWidget):
         self._setup_initial_size()
 
     def _setup_initial_size(self) -> None:
-        """Встановлює початковий розмір віджета."""
-        min_width = self.day_header_width + len(self.days) * 150
+        min_width = len(self.days) * 200  # 200px per day column
         min_height = len(self.hours) * self.time_slot_height
         self.setMinimumSize(min_width, min_height)
 
     def paintEvent(self, event) -> None:
-        """Малює сітку розкладу."""
         painter = QPainter(self)
         painter.setPen(QColor("#3a3a3a"))
-
         width = self.width()
         height = self.height()
-        day_width = (width - self.day_header_width) // len(self.days)
+        day_width = width // len(self.days) if len(self.days) > 0 else 0
 
-        # Горизонтальні лінії (години)
+        # Horizontal lines (hours)
         for i in range(len(self.hours) + 1):
             y = i * self.time_slot_height
             painter.drawLine(0, y, width, y)
 
-        # Вертикальні лінії (дні)
+        # Vertical lines (days)
         for i in range(len(self.days) + 1):
-            x = self.day_header_width + i * day_width
+            x = i * day_width
             painter.drawLine(x, 0, x, height)
 
 
 class ScheduleBlock(QFrame):
-    """Блок для відображення одного уроку в розкладі."""
-
     def __init__(self, lesson):
-        """
-        Ініціалізація блоку уроку.
-
-        Args:
-            lesson: Об'єкт уроку для відображення
-        """
         super().__init__()
         self.lesson = lesson
         self._setup_ui()
 
     def _setup_ui(self) -> None:
-        """Налаштовує інтерфейс блоку уроку."""
-        self.setFixedHeight(40)
-        color = self.lesson.color if self.lesson.color else "#3a3a3a"
-        self._apply_styles(color)
+        self.setFixedHeight(60)
+        self._apply_styles()
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(5, 2, 5, 2)
-        layout.setSpacing(0)
+        layout.setContentsMargins(8, 5, 8, 5)
+        layout.setSpacing(4)
 
         subject_label = QLabel(self.lesson.subject)
+        type_text = self._format_type_text()
         room_text = self._format_room_text()
+
+        type_label = QLabel(type_text)
         room_label = QLabel(room_text)
 
-        subject_label.setStyleSheet("font-weight: bold;")
-        room_label.setStyleSheet("font-size: 12px;")
+        subject_label.setStyleSheet("font-weight: bold; font-size: 14px; background-color: transparent;")
+        type_label.setStyleSheet("font-size: 12px; background-color: transparent;")
+        room_label.setStyleSheet("font-size: 12px; background-color: transparent;")
 
         layout.addWidget(subject_label)
+        layout.addWidget(type_label)
         layout.addWidget(room_label)
         self.setLayout(layout)
 
-    def _apply_styles(self, color: str) -> None:
-        """Застосовує CSS стилі до блоку."""
+    def _apply_styles(self) -> None:
+        color = self.lesson.color if hasattr(self.lesson, 'color') and self.lesson.color else "#3a3a3a"
         self.setStyleSheet(f"""
-            background-color: {color};
-            border-radius: 4px;
-            margin: 2px;
-            padding: 5px;
+            ScheduleBlock {{
+                background-color: {color};
+                border-radius: 6px;
+                margin: 4px;
+                padding: 8px;
+                color: black;
+            }}
         """)
 
+    def _format_type_text(self) -> str:
+        if hasattr(self.lesson, 'type') and self.lesson.type:
+            return f"{tr('app.schedule.type_label')} {self.lesson.type}"
+        return ""
+
     def _format_room_text(self) -> str:
-        """Форматує текст про аудиторію."""
-        room = self.lesson.room if self.lesson.room else tr("app.schedule.room_not_specified")
+        room = self.lesson.room if hasattr(self.lesson, 'room') and self.lesson.room else tr(
+            "app.schedule.room_not_specified")
         return f"{tr('app.schedule.room_label')} {room}"
 
+class ScrollSyncManager:
+    def __init__(self, main_scroll, time_scroll=None, header_scroll=None):
+        self.main_scroll = main_scroll
+        if time_scroll:
+            main_scroll.verticalScrollBar().valueChanged.connect(time_scroll.verticalScrollBar().setValue)
+            time_scroll.verticalScrollBar().valueChanged.connect(main_scroll.verticalScrollBar().setValue)
+        if header_scroll:
+            main_scroll.horizontalScrollBar().valueChanged.connect(header_scroll.horizontalScrollBar().setValue)
+            header_scroll.horizontalScrollBar().valueChanged.connect(main_scroll.horizontalScrollBar().setValue)
 
-class ScheduleView(QScrollArea):
-    """Основний віджет для відображення розкладу."""
+class TimeColumn(QWidget):
+    def __init__(self, hours, time_slot_height=60, day_header_width=100):
+        super().__init__()
+        self.hours = hours
+        self.time_slot_height = time_slot_height
+        self.day_header_width = day_header_width
+        self.setFixedWidth(day_header_width)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
 
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setPen(QColor("#ffffff"))
+
+        # Draw right border
+        painter.drawLine(self.width() - 1, 0, self.width() - 1, self.height())
+
+        # Draw horizontal lines to match grid and add time labels
+        for i in range(len(self.hours)):
+            y = i * self.time_slot_height
+            # Draw text (time label)
+            painter.drawText(0, y + self.time_slot_height // 2, self.width(), self.time_slot_height,
+                             Qt.AlignmentFlag.AlignCenter, self.hours[i])
+
+class ScheduleView(QWidget):
     HOURS = [f"{hour:02d}:00" for hour in range(0, 24)]
     DAY_TRANSLATIONS = {
         'en': ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
@@ -129,17 +136,7 @@ class ScheduleView(QScrollArea):
         'pl': ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
     }
 
-    def __init__(self, time_slot_height: int = 60,
-                 day_header_width: int = 80,
-                 min_day_width: int = 150):
-        """
-        Ініціалізація віджета розкладу.
-
-        Args:
-            time_slot_height: Висота одного часового проміжку
-            day_header_width: Ширина заголовка з годинами
-            min_day_width: Мінімальна ширина колонки дня
-        """
+    def __init__(self, time_slot_height=80, day_header_width=100, min_day_width=200):
         super().__init__()
         app_signals.render_lessons.connect(self._render_lessons)
         self.time_slot_height = time_slot_height
@@ -147,13 +144,11 @@ class ScheduleView(QScrollArea):
         self.min_day_width = min_day_width
         self.lesson_blocks = []
         self.lessons = []
-        self._setup_scroll_area()
-        self._init_content_widget()
-        self._setup_time_labels()
+
+        self._setup_ui()
 
     @property
     def days(self) -> list:
-        """Повертає список днів тижня у поточній мові."""
         return [
             tr("app.days.monday"),
             tr("app.days.tuesday"),
@@ -164,87 +159,109 @@ class ScheduleView(QScrollArea):
             tr("app.days.sunday")
         ]
 
-    def _setup_scroll_area(self) -> None:
-        """Налаштовує область прокрутки."""
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.setWidgetResizable(True)
+    def _setup_ui(self):
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
-    def _init_content_widget(self) -> None:
-        """Ініціалізує вміст області прокрутки."""
+        # Time column
+        self.time_column = TimeColumn(self.HOURS, self.time_slot_height, self.day_header_width)
+        self.time_scroll_area = QScrollArea()
+        self.time_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.time_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.time_scroll_area.setWidgetResizable(True)
+        self.time_scroll_area.setFixedWidth(self.day_header_width)
+        self.time_scroll_area.setWidget(self.time_column)
+        main_layout.addWidget(self.time_scroll_area)
+
+        # Main scroll area for grid
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll_area.setWidgetResizable(True)
+
         self.content_widget = QWidget()
         self.grid_layout = QGridLayout(self.content_widget)
         self.grid_layout.setSpacing(0)
         self.grid_layout.setContentsMargins(0, 0, 0, 0)
-        self.setWidget(self.content_widget)
-        self._update_grid_size()
 
-    def _update_grid_size(self) -> None:
-        """Оновлює розмір сітки."""
-        min_width = self.day_header_width + len(self.days) * self.min_day_width
-        min_height = len(self.HOURS) * self.time_slot_height
-        self.content_widget.setMinimumSize(min_width, min_height)
-
-    def _setup_time_labels(self) -> None:
-        """Додає мітки з годинами до сітки."""
-        for row, time in enumerate(self.HOURS):
-            label = QLabel(time)
-            label.setFixedWidth(self.day_header_width)
-            label.setFixedHeight(self.time_slot_height)
-            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setStyleSheet("""
-                color: #bbb;
-                font-size: 12px;
-                border-right: 1px solid #3a3a3a;
-            """)
-            self.grid_layout.addWidget(label, row, 0)
-
-        self._add_background_grid()
-
-    def _add_background_grid(self) -> None:
-        """Додає фонову сітку."""
+        # Add background grid
         self.background = GridBackground(
             self.HOURS,
             self.days,
             time_slot_height=self.time_slot_height,
-            day_header_width=self.day_header_width
+            day_header_width=0
         )
         self.grid_layout.addWidget(
             self.background,
-            0, 1,
+            0, 0,
             len(self.HOURS),
-            len(self.days)
+            len(self.days),
+            alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft
         )
 
-    def set_lessons(self, lessons: list) -> None:
-        """Встановлює уроки для відображення.
+        self.scroll_area.setWidget(self.content_widget)
+        main_layout.addWidget(self.scroll_area)
+        self._update_grid_size()
 
-        Args:
-            lessons: Список уроків
-        """
+    def set_header_scroll_area(self, header_scroll):
+        self.scroll_sync = ScrollSyncManager(
+            main_scroll=self.scroll_area,
+            time_scroll=self.time_scroll_area,
+            header_scroll=header_scroll
+        )
+
+    def _update_grid_size(self):
+        min_width = len(self.days) * self.min_day_width
+        min_height = len(self.HOURS) * self.time_slot_height
+        self.content_widget.setMinimumSize(min_width, min_height)
+
+    def set_lessons(self, lessons):
         self.lessons = lessons
         self._render_lessons()
 
-    def _render_lessons(self) -> None:
-        """Відображає уроки на сітці."""
+    def _render_lessons(self):
         self._clear_existing_blocks()
-        self._create_day_mapping()
-
+        self._update_background()  # New method call to update background size and redraw
+        day_mapping = self._create_day_mapping()
         for lesson in self.lessons:
-            self._add_lesson_block(lesson)
+            try:
+                day_index = day_mapping.get(lesson.day.lower().strip())
+                if day_index is None:
+                    continue
+                row_index = self._get_time_row_index(lesson.start_time)
+                if row_index is None:
+                    continue
+                block = self._create_lesson_block(lesson)
+                self.grid_layout.addWidget(block, row_index, day_index)
+                self.lesson_blocks.append(block)
+            except (ValueError, AttributeError):
+                continue
 
-    def _clear_existing_blocks(self) -> None:
-        """Видаляє існуючі блоки уроків."""
+    def _update_background(self):
+        # Remove old background
+        self.background.setParent(None)
+        # Create new one with updated dimensions
+        self.background = GridBackground(
+            self.HOURS,
+            self.days,
+            time_slot_height=self.time_slot_height,
+            day_header_width=0
+        )
+        self.grid_layout.addWidget(
+            self.background,
+            0, 0,
+            len(self.HOURS),
+            len(self.days),
+            alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft
+        )
+
+    def _clear_existing_blocks(self):
         for block in self.lesson_blocks:
             block.setParent(None)
         self.lesson_blocks.clear()
 
-    def _create_day_mapping(self) -> dict:
-        """Створює мапу для швидкого пошуку днів.
-
-        Returns:
-            Словник зіставлень назв днів до їх індексів
-        """
+    def _create_day_mapping(self):
         reverse_mapping = {}
         for lang, days in self.DAY_TRANSLATIONS.items():
             for idx, day in enumerate(days):
@@ -253,51 +270,7 @@ class ScheduleView(QScrollArea):
                     reverse_mapping[normalized_day] = idx
         return reverse_mapping
 
-    def _add_lesson_block(self, lesson) -> None:
-        """Додає блок уроку на сітку.
-
-        Args:
-            lesson: Об'єкт уроку для додавання
-        """
-        try:
-            day_index = self._get_day_index(lesson.day)
-            if day_index is None:
-                return
-
-            row_index = self._get_time_row_index(lesson.start_time)
-            if row_index is None:
-                return
-
-            block = self._create_lesson_block(lesson)
-            self.grid_layout.addWidget(block, row_index, day_index + 1)
-            self.lesson_blocks.append(block)
-        except (ValueError, AttributeError):
-            return
-
-    def _get_day_index(self, day_name: str) -> Any | None:
-        """Повертає індекс дня за його назвою.
-
-        Args:
-            day_name: Назва дня
-
-        Returns:
-            Індекс дня або None, якщо не знайдено
-        """
-        if not day_name:
-            return None
-
-        day_mapping = self._create_day_mapping()
-        return day_mapping.get(day_name.lower().strip())
-
-    def _get_time_row_index(self, time_str: str) -> int | None:
-        """Повертає рядок сітки за часом.
-
-        Args:
-            time_str: Час у форматі HH:MM
-
-        Returns:
-            Індекс рядка або None, якщо не знайдено
-        """
+    def _get_time_row_index(self, time_str):
         if not time_str or ":" not in time_str:
             return None
 
@@ -307,15 +280,7 @@ class ScheduleView(QScrollArea):
         except ValueError:
             return None
 
-    def _create_lesson_block(self, lesson) -> ScheduleBlock:
-        """Створює блок уроку.
-
-        Args:
-            lesson: Об'єкт уроку
-
-        Returns:
-            Налаштований блок ScheduleBlock
-        """
+    def _create_lesson_block(self, lesson):
         block = ScheduleBlock(lesson)
         block.setFixedWidth(self.min_day_width - 10)
 
@@ -331,64 +296,69 @@ class ScheduleView(QScrollArea):
 
 
 class ScheduleWidget(QWidget):
-    """Композитний віджет, що містить заголовки днів та розклад."""
-
     def __init__(self):
-        """Ініціалізація віджета розкладу."""
         super().__init__()
         self._setup_ui()
 
-    def _setup_ui(self) -> None:
-        """Налаштовує інтерфейс віджета."""
+    def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        self.schedule_view = ScheduleView()
-        self.day_width = self.schedule_view.min_day_width
+        self.header_scroll_area = QScrollArea()
+        self.header_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.header_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.header_scroll_area.setWidgetResizable(True)
+        self.header_scroll_area.setFixedHeight(80)
 
-        self._setup_header()
-        layout.addWidget(self.header_frame)
-        layout.addWidget(self.schedule_view)
-
-    def _setup_header(self) -> None:
-        """Налаштовує заголовок з днями тижня."""
-        self.header_frame = QFrame()
-        self.header_frame.setFixedHeight(self.schedule_view.time_slot_height)
+        self.header_frame = QWidget()
         self.header_frame.setStyleSheet("""
             background-color: #2b2b2b;
             border-bottom: 1px solid #3a3a3a;
         """)
-
         header_layout = QHBoxLayout(self.header_frame)
-        header_layout.setContentsMargins(self.schedule_view.day_header_width, 0, 0, 0)
+        header_layout.setContentsMargins(0, 0, 0, 0)
         header_layout.setSpacing(0)
 
-        for day in self.schedule_view.days:
+        for day in self.days:
             label = QLabel(day)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setFixedWidth(self.day_width)
+            label.setFixedWidth(200)
             label.setStyleSheet("""
                 font-weight: bold;
-                font-size: 14px;
+                font-size: 16px;
                 color: white;
             """)
             header_layout.addWidget(label)
 
-    def set_lessons(self, lessons: list) -> None:
-        """Встановлює уроки для відображення.
+        self.header_scroll_area.setWidget(self.header_frame)
+        layout.addWidget(self.header_scroll_area)
 
-        Args:
-            lessons: Список уроків
-        """
+        # Schedule view
+        self.schedule_view = ScheduleView()
+        self.schedule_view.set_header_scroll_area(self.header_scroll_area)
+        layout.addWidget(self.schedule_view)
+
+    @property
+    def days(self):
+        return [
+            tr("app.days.monday"),
+            tr("app.days.tuesday"),
+            tr("app.days.wednesday"),
+            tr("app.days.thursday"),
+            tr("app.days.friday"),
+            tr("app.days.saturday"),
+            tr("app.days.sunday")
+        ]
+
+    def set_lessons(self, lessons):
         self.schedule_view.set_lessons(lessons)
 
-    def refresh_translation(self) -> None:
-        """Оновлює переклад при зміні мови."""
-        # Оновлюємо заголовки днів
-        for i, day in enumerate(self.schedule_view.days):
+    def refresh_translation(self):
+        # Update day headers
+        for i, day in enumerate(self.days):
             label = self.header_frame.layout().itemAt(i).widget()
             if isinstance(label, QLabel):
                 label.setText(day)
 
-        # Оновлюємо блоки уроків
         app_signals.render_lessons.emit()
