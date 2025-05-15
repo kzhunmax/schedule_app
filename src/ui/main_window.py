@@ -224,7 +224,7 @@ class MainWindow(QMainWindow):
                     ))
                     conn.commit()
                     self._load_lessons()
-                    self._show_notification(tr("app.lesson.added"), True)
+                    self._show_notification(tr("app.lesson_dialog.added"), True)
             except sqlite3.Error:
                 self._show_notification(tr("app.database.error"), False)
 

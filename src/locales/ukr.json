@@ -69,7 +69,8 @@
       "error_invalid_time_format": "Використовуйте формат HH:MM з ведучими нулями (наприклад, 09:00)",
       "error_empty_subject": "Назва предмету не може бути пустою",
       "delete": "Delete",
-      "edit_title": "Edit lesson"
+      "edit_title": "Edit lesson",
+      "added": "Lesson successfully added"
     },
     "days": {
       "monday": "Понеділок",
@@ -79,11 +80,6 @@
       "friday": "П’ятниця",
       "saturday": "Субота",
       "sunday": "Неділя"
-    },
-    "schedule": {
-      "room_label": "Room:",
-      "room_not_specified": "not specified",
-      "type_label": "Type:"
     },
     "time_dialog": {
       "title": "Годинник",

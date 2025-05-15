@@ -69,7 +69,8 @@
       "error_invalid_time_format": "Use HH:MM format with leading zeros (e.g. 09:00)",
       "error_empty_subject": "Subject name cannot be empty",
       "delete": "Delete",
-      "edit_title": "Edit lesson"
+      "edit_title": "Edit lesson",
+      "added": "Lesson successfully added"
     },
     "days": {
       "monday": "Monday",
@@ -79,11 +80,6 @@
       "friday": "Friday",
       "saturday": "Saturday",
       "sunday": "Sunday"
-    },
-    "schedule": {
-      "room_label": "Room:",
-      "room_not_specified": "not specified",
-      "type_label": "Type:"
     },
     "time_dialog": {
       "title": "Select Time",
