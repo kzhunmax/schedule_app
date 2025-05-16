@@ -1,90 +1,92 @@
 {
   "app": {
-    "title": "Schedule Planner",
-    "buttons": {
-      "light_theme": "      Light mode",
-      "dark_theme": "      Night mode",
-      "add": "      Add Lesson",
-      "export_csv": "      Export",
-      "import_csv": "      Import",
-      "settings": "      Settings"
-    },
-    "settings": {
-      "title": "Settings",
-      "theme": "Choose Theme",
-      "view_mode": "Schedule View",
-      "language": "Choose Language",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "notifications": "Enable Notifications",
-      "yes": "Yes",
-      "no": "No",
-      "cancel": "Cancel",
-      "save": "Save",
-      "dark": "Dark",
-      "light": "Light",
-      "saved": "Settings saved!"
-    },
-    "export": {
-      "title": "Export Schedule",
-      "csv": "Export as CSV",
-      "json": "Export as JSON",
-      "csv_success": "Successfully exported to CSV",
-      "json_success": "Successfully exported to JSON",
-      "csv_failed": "Error exporting to CSV",
-      "json_failed": "Error exporting to JSON"
-    },
-    "import": {
-      "title": "Import Schedule",
-      "instructions": "Drag and drop a .csv or .json file here",
-      "csv_success": "File imported successfully!",
-      "json_success": "JSON file imported successfully!",
-      "csv_failed": "Failed to load CSV file.",
-      "json_failed": "Failed to load JSON file.",
-      "unsupported_format": "Unsupported format. Please use .csv or .json.",
-      "file_corrupted": "Файл пошкоджено або містить некоректні дані"
-    },
-    "lesson_dialog": {
-      "add_title": "Add Lesson",
-      "label_day": "Day:",
-      "label_subject": "Subject:",
-      "label_start_time": "Start Time:",
-      "label_end_time": "End Time:",
-      "label_type": "Type:",
-      "label_room": "Room:",
-      "time_placeholder": "HH:MM e.g. 09:00",
-      "subject_placeholder": "e.g. math",
-      "room_placeholder": "e.g. A019",
-      "type_online": "Online",
-      "type_offline": "Offline",
-      "save": "Save",
-      "cancel": "Cancel",
-      "label_color": "Choose Color:",
-      "validation_error": "Validation Error",
-      "error_time_required": "Please specify both start and end time",
-      "error_invalid_start_time": "Invalid start time format. Use HH:MM format (e.g. 09:30)",
-      "error_invalid_end_time": "Invalid end time format. Use HH:MM format (e.g. 11:20)",
-      "error_same_times": "Start time and end time cannot be the same",
-      "error_end_before_start": "End time must be later than start time",
-      "error_invalid_time_format": "Use HH:MM format with leading zeros (e.g. 09:00)",
-      "error_empty_subject": "Subject name cannot be empty",
-      "delete": "Delete",
-      "edit_title": "Edit lesson",
-      "added": "Lesson successfully added"
-    },
-    "days": {
-      "monday": "Monday",
-      "tuesday": "Tuesday",
-      "wednesday": "Wednesday",
-      "thursday": "Thursday",
-      "friday": "Friday",
-      "saturday": "Saturday",
-      "sunday": "Sunday"
-    },
-    "time_dialog": {
-      "title": "Select Time",
-      "save": "Save",
-      "cancel": "Cancel"
+      "title": "Schedule Planner",
+      "buttons": {
+        "light_theme": "      Light mode",
+        "dark_theme": "      Night mode",
+        "add": "      Add Lesson",
+        "export_csv": "      Export",
+        "import_csv": "      Import",
+        "settings": "      Settings"
+      },
+      "settings": {
+        "title": "Settings",
+        "theme": "Choose Theme",
+        "view_mode": "Schedule View",
+        "language": "Choose Language",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "notifications": "Enable Notifications",
+        "yes": "Yes",
+        "no": "No",
+        "cancel": "Cancel",
+        "save": "Save",
+        "dark": "Dark",
+        "light": "Light",
+        "saved": "Settings saved!"
+      },
+      "export": {
+        "title": "Export Schedule",
+        "csv": "Export as CSV",
+        "json": "Export as JSON",
+        "csv_success": "Successfully exported to CSV",
+        "json_success": "Successfully exported to JSON",
+        "csv_failed": "Error exporting to CSV",
+        "json_failed": "Error exporting to JSON"
+      },
+      "import": {
+        "title": "Import Schedule",
+        "instructions": "Drag and drop a .csv or .json file here",
+        "csv_success": "File imported successfully!",
+        "json_success": "JSON file imported successfully!",
+        "csv_failed": "Failed to load CSV file.",
+        "json_failed": "Failed to load JSON file.",
+        "unsupported_format": "Unsupported format. Please use .csv or .json.",
+        "file_corrupted": "File is corrupted or contains invalid data"
+      },
+      "lesson_dialog": {
+        "add_title": "Add Lesson",
+        "label_day": "Day:",
+        "label_subject": "Subject:",
+        "label_start_time": "Start Time:",
+        "label_end_time": "End Time:",
+        "label_type": "Type:",
+        "label_room": "Room:",
+        "time_placeholder": "HH:MM e.g. 09:00",
+        "subject_placeholder": "e.g. math",
+        "room_placeholder": "e.g. A019",
+        "type_online": "Online",
+        "type_offline": "Offline",
+        "save": "Save",
+        "cancel": "Cancel",
+        "label_color": "Choose Color:",
+        "validation_error": "Validation Error",
+        "error_time_required": "Please specify both start and end time",
+        "error_invalid_start_time": "Invalid start time format. Use HH:MM format (e.g. 09:30)",
+        "error_invalid_end_time": "Invalid end time format. Use HH:MM format (e.g. 11:20)",
+        "error_same_times": "Start time and end time cannot be the same",
+        "error_end_before_start": "End time must be later than start time",
+        "error_invalid_time_format": "Use HH:MM format with leading zeros (e.g. 09:00)",
+        "error_empty_subject": "Subject name cannot be empty",
+        "delete": "Delete",
+        "edit_title": "Edit lesson",
+        "added": "Lesson successfully added",
+        "existing_lesson_error": "A lesson already exists at this time",
+        "error_time_not_multiple_of_5": "Minutes must be multiples of 5 (e.g., 05, 10, 15, etc.)"
+      },
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "time_dialog": {
+        "title": "Select Time",
+        "save": "Save",
+        "cancel": "Cancel"
+      }
     }
-  }
 }

@@ -207,6 +207,40 @@ class MainWindow(QMainWindow):
         except sqlite3.Error:
             self._show_notification(tr("app.database.error"), False)
 
+    def _check_lesson_conflict(self, new_lesson: Lesson) -> bool:
+        """Перевіряє, чи є вже урок на цей же час.
+
+        Args:
+            new_lesson: Новий урок для перевірки
+
+        Returns:
+            True, якщо є конфлікт, False - якщо ні
+        """
+        try:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT COUNT(*) FROM lessons 
+                    WHERE day = ? 
+                    AND (
+                        (start_time <= ? AND end_time > ?) OR
+                        (start_time < ? AND end_time >= ?) OR
+                        (start_time >= ? AND end_time <= ?)
+                    )
+                    AND id != ?
+                """, (
+                    new_lesson.day,
+                    new_lesson.start_time, new_lesson.start_time,
+                    new_lesson.end_time, new_lesson.end_time,
+                    new_lesson.start_time, new_lesson.end_time,
+                    new_lesson.id or -1  # Для нового уроку id буде None
+                ))
+                count = cursor.fetchone()[0]
+                return count > 0
+        except sqlite3.Error:
+            self._show_notification(tr("app.database.error"), False)
+            return False
+
     def _add_lesson(self) -> None:
         """Відкриває діалогове вікно для додавання нового уроку."""
         dialog = LessonDialog(parent=self)

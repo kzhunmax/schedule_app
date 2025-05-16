@@ -12,6 +12,7 @@ QLabel {
     color: #444444;
     font-size: 18px;
     font-weight: bold;
+    border: none;
 }
 
 QPushButton {
@@ -53,8 +54,8 @@ QToolButton#sidebarButton:pressed {
 /* Input Fields */
 QLineEdit, QComboBox {
     background-color: #ffffff;
-    border: 1px solid #cccccc;
     padding: 8px;
+    border: 1px solid #cccccc;
     border-radius: 6px;
     color: #000000;
 }
@@ -75,6 +76,17 @@ QScrollBar::handle:vertical {
     border-radius: 5px;
 }
 
+QScrollBar:horizontal {
+    background-color: #f0f0f0;
+    height: 10px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #cccccc;
+    min-width: 20px;
+    border-radius: 5px;
+}
+
 QScrollBar::add-line, QScrollBar::sub-line {
     background-color: none;
 }
@@ -86,7 +98,7 @@ QScrollBar::add-page, QScrollBar::sub-page {
 /* Sidebar */
 QFrame#sidebarFrame {
     background-color: #eeeeee;
-    margin: 0 0 0 0;
+    margin: 0;
 }
 
 /* Settings Dialog */
@@ -97,12 +109,16 @@ QDialog {
 
 QComboBox::drop-down {
     background-color: transparent;
+    width: 0px;
+    padding: 0px;
+    border: none;
 }
 
 QComboBox QAbstractItemView {
     background-color: #ffffff;
     color: #000000;
     selection-background-color: #dfefff;
+    border-radius: 6px;
 }
 
 /* Icons */
@@ -160,7 +176,6 @@ QPushButton#optionButton {
 QPushButton#optionButton:checked {
     background-color: #d0d0d0;
     color: black;
-    border-color: #999;
 }
 
 QPushButton[checkable="true"] {
@@ -185,4 +200,110 @@ Notification QPushButton {
 
 Notification QPushButton:hover {
     color: #333;
+}
+
+ScheduleBlock {
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    margin: 2px;
+    padding: 5px;
+}
+
+ScheduleBlock QLabel {
+    color: #000000;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+ScheduleBlock QLabel[objectName^="subject"] {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+GridBackground {
+    background-color: transparent;
+}
+
+TimeColumn {
+    background-color: #f9f9f9;
+    border-right: 1px solid #dddddd;
+}
+
+TimeColumn QLabel {
+    color: #333333;
+    font-size: 12px;
+}
+
+/* Header styles */
+ScheduleWidget QScrollArea QWidget {
+    background-color: #f5f5f5;
+}
+
+ScheduleWidget QLabel {
+    color: #000000;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Scroll area styles */
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+
+/* Menus */
+QMenu {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 8px 0 0 8px;
+    color: #000000;
+    border: 1px solid #cccccc;
+    font-size: 14px;
+    min-width: 180px;
+}
+
+QMenu::item {
+    padding: 8px 8px 8px 8px;
+    margin: 2px 6px;
+    border-radius: 4px;
+    background-color: transparent;
+    spacing: 12px;
+}
+
+QMenu::item:selected {
+    background-color: #e0e0e0;
+    color: #000000;
+}
+
+QMenu::item:disabled {
+    color: #777777;
+    background-color: transparent;
+}
+
+QMenu::item:selected:disabled {
+    background-color: #f0f0f0;
+    color: #777777;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #dddddd;
+    margin: 6px 8px;
+}
+
+QMenu::icon {
+    padding-left: 8px;
+    width: 20px;
+    height: 20px;
+}
+
+QMenu::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+ScheduleView {
+    background-color: #f5f5f5;
 }

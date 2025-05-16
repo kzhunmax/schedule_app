@@ -8,6 +8,8 @@ class AppSignals(QObject):
     set_new_language = pyqtSignal(str)
     lessons_imported = pyqtSignal(list)
     render_lessons = pyqtSignal()
+    lesson_updated = pyqtSignal(object)
+    lesson_deleted = pyqtSignal(object)
 
 
 app_signals = AppSignals()

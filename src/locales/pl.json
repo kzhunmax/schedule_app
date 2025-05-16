@@ -1,90 +1,93 @@
 {
-  "app": {
-    "title": "Plan Zajęć",
-    "buttons": {
-      "light_theme": "      Jasny motyw",
-      "dark_theme": "      Ciemny motyw",
-      "add": "      Dodaj zajęcia",
-      "export_csv": "      Eksportuj",
-      "import_csv": "      Importuj",
-      "settings": "      Ustawienia"
-    },
-    "settings": {
-      "title": "Ustawienia",
-      "theme": "Wybierz motyw",
-      "view_mode": "Widok planu",
-      "language": "Wybierz język",
-      "daily": "Codziennie",
-      "weekly": "Tygodniowo",
-      "notifications": "Włącz powiadomienia",
-      "yes": "Tak",
-      "no": "Nie",
-      "cancel": "Anuluj",
-      "save": "Zapisz",
-      "dark": "Ciemny",
-      "light": "Jasny",
-      "saved": "Settings saved!"
-    },
-    "export": {
-      "title": "Export Schedule",
-      "csv": "Export as CSV",
-      "json": "Export as JSON",
-      "csv_success": "Successfully exported to CSV",
-      "json_success": "Successfully exported to JSON",
-      "csv_failed": "Error exporting to CSV",
-      "json_failed": "Error exporting to JSON"
-    },
-    "import": {
-      "title": "Import Schedule",
-      "instructions": "Drag and drop a .csv or .json file here",
-      "csv_success": "CSV file imported successfully!",
-      "json_success": "JSON file imported successfully!",
-      "csv_failed": "Failed to load CSV file.",
-      "json_failed": "Failed to load JSON file.",
-      "unsupported_format": "Unsupported format. Please use .csv or .json.",
-      "file_corrupted": "Файл пошкоджено або містить некоректні дані"
-    },
-    "lesson_dialog": {
-      "add_title": "Dodaj zajęcia",
-      "label_day": "Dzień:",
-      "label_subject": "Przedmiot:",
-      "label_start_time": "Czas rozpoczęcia:",
-      "label_end_time": "Czas zakończenia:",
-      "label_type": "Typ:",
-      "label_room": "Sala:",
-      "time_placeholder": "HH:MM e.g. 09:00",
-      "subject_placeholder": "e.g. math",
-      "room_placeholder": "e.g. A019",
-      "type_online": "Online",
-      "type_offline": "Stacjonarnie",
-      "save": "Zapisz",
-      "cancel": "Anuluj",
-      "label_color": "Wybierz Kolor:",
-      "validation_error": "Validation Error",
-      "error_time_required": "Please specify both start and end time",
-      "error_invalid_start_time": "Invalid start time format. Use HH:MM format (e.g. 09:30)",
-      "error_invalid_end_time": "Invalid end time format. Use HH:MM format (e.g. 11:20)",
-      "error_same_times": "Start time and end time cannot be the same",
-      "error_end_before_start": "End time must be later than start time",
-      "error_invalid_time_format": "Use HH:MM format with leading zeros (e.g. 09:00)",
-      "error_empty_subject": "Subject name cannot be empty",
-      "delete": "Delete",
-      "edit_title": "Edit lesson",
-      "added": "Lesson successfully added"
-    },
-    "days": {
-      "monday": "Poniedziałek",
-      "tuesday": "Wtorek",
-      "wednesday": "Środa",
-      "thursday": "Czwartek",
-      "friday": "Piątek",
-      "saturday": "Sobota",
-      "sunday": "Niedziela"
-    },
-    "time_dialog": {
-      "title": "Select Time",
-      "save": "Save",
-      "cancel": "Cancel"
+    "app": {
+      "title": "Plan Zajęć",
+      "buttons": {
+        "light_theme": "      Jasny motyw",
+        "dark_theme": "      Ciemny motyw",
+        "add": "      Dodaj zajęcia",
+        "export_csv": "      Eksportuj",
+        "import_csv": "      Importuj",
+        "settings": "      Ustawienia"
+      },
+      "settings": {
+        "title": "Ustawienia",
+        "theme": "Wybierz motyw",
+        "view_mode": "Widok planu",
+        "language": "Wybierz język",
+        "daily": "Codziennie",
+        "weekly": "Tygodniowo",
+        "notifications": "Włącz powiadomienia",
+        "yes": "Tak",
+        "no": "Nie",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "dark": "Ciemny",
+        "light": "Jasny",
+        "saved": "Ustawienia zapisane!"
+      },
+      "export": {
+        "title": "Eksport planu",
+        "csv": "Eksportuj jako CSV",
+        "json": "Eksportuj jako JSON",
+        "csv_success": "Pomyślnie wyeksportowano do CSV",
+        "json_success": "Pomyślnie wyeksportowano do JSON",
+        "csv_failed": "Błąd podczas eksportu do CSV",
+        "json_failed": "Błąd podczas eksportu do JSON"
+      },
+      "import": {
+        "title": "Import planu",
+        "instructions": "Przeciągnij i upuść plik .csv lub .json tutaj",
+        "csv_success": "Plik CSV zaimportowany pomyślnie!",
+        "json_success": "Plik JSON zaimportowany pomyślnie!",
+        "csv_failed": "Nie udało się załadować pliku CSV.",
+        "json_failed": "Nie udało się załadować pliku JSON.",
+        "unsupported_format": "Nieobsługiwany format. Użyj .csv lub .json.",
+        "file_corrupted": "Plik jest uszkodzony lub zawiera nieprawidłowe dane"
+      },
+      "lesson_dialog": {
+        "add_title": "Dodaj zajęcia",
+        "label_day": "Dzień:",
+        "label_subject": "Przedmiot:",
+        "label_start_time": "Czas rozpoczęcia:",
+        "label_end_time": "Czas zakończenia:",
+        "label_type": "Typ:",
+        "label_room": "Sala:",
+        "time_placeholder": "GG:MM np. 09:00",
+        "subject_placeholder": "np. matematyka",
+        "room_placeholder": "np. A019",
+        "type_online": "Online",
+        "type_offline": "Stacjonarnie",
+        "save": "Zapisz",
+        "cancel": "Anuluj",
+        "label_color": "Wybierz kolor:",
+        "validation_error": "Błąd walidacji",
+        "error_time_required": "Proszę podać czas rozpoczęcia i zakończenia",
+        "error_invalid_start_time": "Nieprawidłowy format czasu rozpoczęcia. Użyj formatu GG:MM (np. 09:30)",
+        "error_invalid_end_time": "Nieprawidłowy format czasu zakończenia. Użyj formatu GG:MM (np. 11:20)",
+        "error_same_times": "Czas rozpoczęcia i zakończenia nie mogą być takie same",
+        "error_end_before_start": "Czas zakończenia musi być późniejszy niż czas rozpoczęcia",
+        "error_invalid_time_format": "Użyj formatu GG:MM z zerami wiodącymi (np. 09:00)",
+        "error_empty_subject": "Nazwa przedmiotu nie może być pusta",
+        "delete": "Usuń",
+        "edit_title": "Edytuj zajęcia",
+        "added": "Zajęcia zostały pomyślnie dodane",
+        "existing_lesson_error": "Lekcja w tym czasie już istnieje",
+        "error_time_not_multiple_of_5": "Minuty muszą być wielokrotnościami 5 (np. 05, 10, 15 itd.)"
+      },
+      "days": {
+        "monday": "Poniedziałek",
+        "tuesday": "Wtorek",
+        "wednesday": "Środa",
+        "thursday": "Czwartek",
+        "friday": "Piątek",
+        "saturday": "Sobota",
+        "sunday": "Niedziela"
+      },
+      "time_dialog": {
+        "title": "Wybierz czas",
+        "save": "Zapisz",
+        "cancel": "Anuluj"
+      }
     }
-  }
+
 }

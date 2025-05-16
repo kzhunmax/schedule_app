@@ -1,5 +1,5 @@
 """
-Діалогове вікно для створення уроку.
+Діалогове вікно для створення або редагування уроку.
 
 Містить форму для введення всіх необхідних даних про урок:
 - День тижня
@@ -30,15 +30,17 @@ class LessonDialog(QDialog):
     start_time_input: QLineEdit
     end_time_input: QLineEdit
 
-    def __init__(self, lesson: Lesson = None, parent=None):
+    def __init__(self, lesson: Lesson = None, edit_mode: bool = False, parent=None):
         """Ініціалізація діалогового вікна.
 
         Args:
             lesson: Існуючий урок для редагування (опціонально)
+            edit_mode: Режим редагування (True для редагування, False для додавання)
             parent: Батьківський віджет
         """
         super().__init__(parent)
         self.lesson = lesson or Lesson()
+        self.edit_mode = edit_mode
         self.selected_color = self.lesson.color or self.COLORS[0]
 
         self._init_ui()
@@ -46,7 +48,7 @@ class LessonDialog(QDialog):
 
     def _init_ui(self) -> None:
         """Ініціалізація інтерфейсу користувача."""
-        self.setWindowTitle(tr("app.lesson_dialog.add_title"))
+        self.setWindowTitle(tr("app.lesson_dialog.edit_title" if self.edit_mode else "app.lesson_dialog.add_title"))
         self.setMinimumSize(self.MIN_DIALOG_WIDTH, self.MIN_DIALOG_HEIGHT)
 
         main_layout = QVBoxLayout()
@@ -107,15 +109,7 @@ class LessonDialog(QDialog):
     def _init_time_input(self, layout: QVBoxLayout, label_key: str,
                          input_name: str, initial_value: str,
                          picker_slot) -> None:
-        """Створює поле для вводу часу з кнопкою вибору.
-
-        Args:
-            layout: Layout для додавання елементів
-            label_key: Ключ перекладу для підпису
-            input_name: Назва атрибуту для поля вводу
-            initial_value: Початкове значення
-            picker_slot: Функція-обробник вибору часу
-        """
+        """Створює поле для вводу часу з кнопкою вибору."""
         time_input = QLineEdit(initial_value)
         time_input.setPlaceholderText(tr("app.lesson_dialog.time_placeholder"))
         setattr(self, input_name, time_input)
@@ -146,7 +140,6 @@ class LessonDialog(QDialog):
         self.option_group.addButton(self.offline_btn)
         self.option_group.setExclusive(True)
 
-        # Встановлення початкового стану
         if self.lesson.type == "Offline":
             self.offline_btn.setChecked(True)
         else:
@@ -212,21 +205,28 @@ class LessonDialog(QDialog):
         return btn
 
     def _init_action_buttons(self, layout: QVBoxLayout) -> None:
-        """Ініціалізує кнопки дій (зберегти/скасувати)."""
+        """Ініціалізує кнопки дій (зберегти/скасувати або видалити)."""
         btn_layout = QHBoxLayout()
 
         self.save_btn = QPushButton(tr("app.lesson_dialog.save"))
-        self.cancel_btn = QPushButton(tr("app.lesson_dialog.cancel"))
-
         btn_layout.addWidget(self.save_btn)
-        btn_layout.addWidget(self.cancel_btn)
+
+        if self.edit_mode:
+            self.delete_btn = QPushButton(tr("app.lesson_dialog.delete"))
+            btn_layout.addWidget(self.delete_btn)
+        else:
+            self.cancel_btn = QPushButton(tr("app.lesson_dialog.cancel"))
+            btn_layout.addWidget(self.cancel_btn)
 
         layout.addLayout(btn_layout)
 
     def _setup_connections(self) -> None:
         """Налаштовує підключення сигналів."""
         self.save_btn.clicked.connect(self.validate_and_accept)
-        self.cancel_btn.clicked.connect(self.reject)
+        if self.edit_mode:
+            self.delete_btn.clicked.connect(self.delete_and_close)
+        else:
+            self.cancel_btn.clicked.connect(self.reject)
 
     def _update_color_buttons(self) -> None:
         """Оновлює стан кнопок вибору кольору."""
@@ -240,15 +240,7 @@ class LessonDialog(QDialog):
 
     @staticmethod
     def hex_to_rgba(hex_color: str, opacity: float = 1.0) -> str:
-        """Конвертує HEX-колір у RGBA-рядок.
-
-        Args:
-            hex_color: Колір у форматі HEX
-            opacity: Прозорість (0.0-1.0)
-
-        Returns:
-            Рядок у форматі "R, G, B, A"
-        """
+        """Конвертує HEX-колір у RGBA-рядок."""
         hex_color = hex_color.lstrip('#')
         return f"{int(hex_color[0:2], 16)}, {int(hex_color[2:4], 16)}, {int(hex_color[4:6], 16)}, {opacity}"
 
@@ -261,11 +253,7 @@ class LessonDialog(QDialog):
         self._pick_time(self.end_time_input)
 
     def _pick_time(self, target_input: QLineEdit) -> None:
-        """Спільний метод для вибору часу.
-
-        Args:
-            target_input: Поле вводу, куди записати результат
-        """
+        """Спільний метод для вибору часу."""
         dialog = TimePickerDialog(target_input.text(), self)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             target_input.setText(dialog.get_time())
@@ -275,14 +263,17 @@ class LessonDialog(QDialog):
         if not self._validate_inputs():
             return
 
+        lesson = self.get_data()
+        app_signals.lesson_updated.emit(lesson)  # Emit signal for save
+        self.accept()
+
+    def delete_and_close(self) -> None:
+        """Еміт сигнал видалення і закриває діалог."""
+        app_signals.lesson_deleted.emit(self.lesson.id)
         self.accept()
 
     def _validate_inputs(self) -> bool:
-        """Валідація введених даних.
-
-        Returns:
-            True, якщо дані валідні, False - якщо ні
-        """
+        """Валідація введених даних."""
         subject = self.subject_input.text().strip()
         if not subject:
             self._show_error(tr("app.lesson_dialog.error_empty_subject"))
@@ -300,12 +291,21 @@ class LessonDialog(QDialog):
         return True
 
     def _validate_time(self, time_str: str) -> bool:
-        """Валідує формат часу."""
+        """Валідує формат часу та перевіряє кратність 5 хвилинам."""
         if not time_str:
             self._show_error(tr("app.lesson_dialog.error_time_required"))
             return False
 
         if not self.validate_time_format(time_str):
+            try:
+                _, minutes = time_str.split(':')
+                minutes_int = int(minutes)
+                if minutes_int % 5 != 0:
+                    self._show_error(tr("app.lesson_dialog.error_time_not_multiple_of_5"))
+                    return False
+            except ValueError:
+                pass
+
             self._show_error(tr("app.lesson_dialog.error_invalid_time_format"))
             return False
 
@@ -330,14 +330,7 @@ class LessonDialog(QDialog):
 
     @staticmethod
     def normalize_time(time_str: str) -> str:
-        """Нормалізує рядок часу до формату HH:MM.
-
-        Args:
-            time_str: Рядок часу для нормалізації
-
-        Returns:
-            Нормалізований рядок часу
-        """
+        """Нормалізує рядок часу до формату HH:MM."""
         if not time_str or ':' not in time_str:
             return time_str
 
@@ -346,27 +339,13 @@ class LessonDialog(QDialog):
 
     @staticmethod
     def time_to_minutes(time_str: str) -> int:
-        """Конвертує час у хвилини.
-
-        Args:
-            time_str: Рядок часу у форматі HH:MM
-
-        Returns:
-            Кількість хвилин з початку доби
-        """
+        """Конвертує час у хвилини."""
         hours, minutes = map(int, time_str.split(':'))
         return hours * 60 + minutes
 
     @staticmethod
     def validate_time_format(time_str: str) -> bool:
-        """Перевіряє коректність формату часу.
-
-        Args:
-            time_str: Рядок часу для перевірки
-
-        Returns:
-            True, якщо формат валідний, False - якщо ні
-        """
+        """Перевіряє коректність формату часу та кратність 5 хвилинам."""
         try:
             if time_str.count(':') != 1:
                 return False
@@ -377,16 +356,19 @@ class LessonDialog(QDialog):
 
             hours_int = int(hours)
             minutes_int = int(minutes)
-            return 0 <= hours_int <= 23 and 0 <= minutes_int <= 59
+
+            if not (0 <= hours_int <= 23 and 0 <= minutes_int <= 59):
+                return False
+
+            if minutes_int % 5 != 0:
+                return False
+
+            return True
         except ValueError:
             return False
 
     def get_data(self) -> Lesson:
-        """Повертає дані уроку з форми.
-
-        Returns:
-            Об'єкт Lesson з даними з форми
-        """
+        """Повертає дані уроку з форми."""
         selected_button = self.color_button_group.checkedButton()
         self.selected_color = selected_button.toolTip() if selected_button else self.COLORS[0]
 

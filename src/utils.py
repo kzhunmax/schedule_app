@@ -4,12 +4,20 @@ from typing import List, Optional
 from PyQt6.QtWidgets import QFileDialog
 from src.models import Lesson
 
-REQUIRED_FIELDS = {
+REQUIRED_FIELDS_CVS = {
     'ID': str,
     'Day': str,
     'Subject': str,
     'Start_time': str,
     'End_time': str,
+}
+
+REQUIRED_FIELDS_JSON = {
+    'id': int,
+    'day': str,
+    'subject': str,
+    'start_time': str,
+    'end_time': str,
 }
 
 
@@ -74,9 +82,17 @@ def export_to_json(lessons: list, parent=None) -> Optional[bool]:
         return False
 
 
-def _validate_lesson_fields(row: dict) -> bool:
+def _validate_lesson_fields_cvs(row: dict) -> bool:
     """Перевіряє, чи всі обов'язкові поля присутні та не є порожніми."""
-    for field, field_type in REQUIRED_FIELDS.items():
+    for field, field_type in REQUIRED_FIELDS_CVS.items():
+        value = row.get(field)
+        if not isinstance(value, field_type) or not value:
+            return False
+    return True
+
+def _validate_lesson_fields_json(row: dict) -> bool:
+    """Перевіряє, чи всі обов'язкові поля присутні та не є порожніми."""
+    for field, field_type in REQUIRED_FIELDS_JSON.items():
         value = row.get(field)
         if not isinstance(value, field_type) or not value:
             return False
@@ -98,7 +114,7 @@ def import_from_csv(file_path: str) -> List[Lesson]:
             reader = csv.DictReader(f)
 
             # Перевірка заголовків
-            missing_headers = [h for h in REQUIRED_FIELDS if h not in reader.fieldnames]
+            missing_headers = [h for h in REQUIRED_FIELDS_CVS if h not in reader.fieldnames]
             if missing_headers:
                 print("CSV Import Error: Missing required headers", missing_headers)
                 return []
@@ -110,7 +126,7 @@ def import_from_csv(file_path: str) -> List[Lesson]:
                 lesson_id = row.get("ID")
 
                 # Перевірка на пусті/відсутні обов'язкові поля
-                if not _validate_lesson_fields(row):
+                if not _validate_lesson_fields_cvs(row):
                     print("CSV Import Error: Invalid or missing fields")
                     return []
 
@@ -160,10 +176,10 @@ def import_from_json(file_path: str) -> List[Lesson]:
         seen_ids = set()
 
         for item in data:
-            lesson_id = item.get("ID")
+            lesson_id = item.get("id")
 
             # Перевірка обов'язкових полів
-            if not _validate_lesson_fields(item):
+            if not _validate_lesson_fields_json(item):
                 print("JSON Import Error: Invalid or missing fields")
                 return []
 

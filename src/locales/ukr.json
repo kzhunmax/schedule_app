@@ -1,90 +1,92 @@
 {
   "app": {
-    "title": "Планувальник розкладу",
-    "buttons": {
-      "light_theme": "      Світла тема",
-      "dark_theme": "      Темна тема",
-      "add": "      Додати заняття",
-      "export_csv": "      Експортувати",
-      "import_csv": "      Імпортувати",
-      "settings": "      Налаштування"
-    },
-    "settings": {
-      "title": "Налаштування",
-      "theme": "Оберіть тему",
-      "view_mode": "Вигляд розкладу",
-      "language": "Оберіть мову",
-      "daily": "Щоденний",
-      "weekly": "Тижневий",
-      "notifications": "Увімкнути сповіщення",
-      "yes": "Так",
-      "no": "Ні",
-      "cancel": "Скасувати",
-      "save": "Зберегти",
-      "dark": "Темна",
-      "light": "Світла",
-      "saved": "Settings saved!"
-    },
-    "export": {
-      "title": "Export Schedule",
-      "csv": "Export as CSV",
-      "json": "Export as JSON",
-      "csv_success": "Successfully exported to CSV",
-      "json_success": "Successfully exported to JSON",
-      "csv_failed": "Error exporting to CSV",
-      "json_failed": "Error exporting to JSON"
-    },
-    "import": {
-      "title": "Import Schedule",
-      "instructions": "Drag and drop a .csv or .json file here",
-      "csv_success": "CSV file imported successfully!",
-      "json_success": "JSON file imported successfully!",
-      "csv_failed": "Failed to load CSV file.",
-      "json_failed": "Failed to load JSON file.",
-      "unsupported_format": "Unsupported format. Please use .csv or .json.",
-      "file_corrupted": "Файл пошкоджено або містить некоректні дані"
-    },
-    "lesson_dialog": {
-      "add_title": "Додати заняття",
-      "label_day": "День:",
-      "label_subject": "Предмет:",
-      "label_start_time": "Час початку:",
-      "label_end_time": "Час закінчення:",
-      "label_type": "Тип:",
-      "label_room": "Аудиторія:",
-      "time_placeholder": "HH:MM e.g. 09:00",
-      "subject_placeholder": "e.g. math",
-      "room_placeholder": "e.g. A019",
-      "type_online": "Онлайн",
-      "type_offline": "Офлайн",
-      "save": "Зберегти",
-      "cancel": "Скасувати",
-      "label_color": "Обери Колір:",
-      "validation_error": "Помилка валідації",
-      "error_time_required": "Будь ласка, вкажіть час початку та закінчення заняття",
-      "error_invalid_start_time": "Невірний формат часу початку. Використовуйте формат ГГ:ХХ (наприклад, 09:30)",
-      "error_invalid_end_time": "Невірний формат часу закінчення. Використовуйте формат ГГ:ХХ (наприклад, 11:20)",
-      "error_same_times": "Час початку та закінчення не можуть співпадати",
-      "error_end_before_start": "Час закінчення повинен бути пізніше часу початку",
-      "error_invalid_time_format": "Використовуйте формат HH:MM з ведучими нулями (наприклад, 09:00)",
-      "error_empty_subject": "Назва предмету не може бути пустою",
-      "delete": "Delete",
-      "edit_title": "Edit lesson",
-      "added": "Lesson successfully added"
-    },
-    "days": {
-      "monday": "Понеділок",
-      "tuesday": "Вівторок",
-      "wednesday": "Середа",
-      "thursday": "Четвер",
-      "friday": "П’ятниця",
-      "saturday": "Субота",
-      "sunday": "Неділя"
-    },
-    "time_dialog": {
-      "title": "Годинник",
-      "save": "Зберегти",
-      "cancel": "Скасувати"
+      "title": "Планувальник розкладу",
+      "buttons": {
+        "light_theme": "      Світла тема",
+        "dark_theme": "      Темна тема",
+        "add": "      Додати заняття",
+        "export_csv": "      Експортувати",
+        "import_csv": "      Імпортувати",
+        "settings": "      Налаштування"
+      },
+      "settings": {
+        "title": "Налаштування",
+        "theme": "Оберіть тему",
+        "view_mode": "Вигляд розкладу",
+        "language": "Оберіть мову",
+        "daily": "Щоденний",
+        "weekly": "Тижневий",
+        "notifications": "Увімкнути сповіщення",
+        "yes": "Так",
+        "no": "Ні",
+        "cancel": "Скасувати",
+        "save": "Зберегти",
+        "dark": "Темна",
+        "light": "Світла",
+        "saved": "Налаштування збережено!"
+      },
+      "export": {
+        "title": "Експорт розкладу",
+        "csv": "Експортувати як CSV",
+        "json": "Експортувати як JSON",
+        "csv_success": "Успішно експортовано у формат CSV",
+        "json_success": "Успішно експортовано у формат JSON",
+        "csv_failed": "Помилка при експорті у формат CSV",
+        "json_failed": "Помилка при експорті у формат JSON"
+      },
+      "import": {
+        "title": "Імпорт розкладу",
+        "instructions": "Перетягніть файл .csv або .json сюди",
+        "csv_success": "CSV файл успішно імпортовано!",
+        "json_success": "JSON файл успішно імпортовано!",
+        "csv_failed": "Не вдалося завантажити CSV файл.",
+        "json_failed": "Не вдалося завантажити JSON файл.",
+        "unsupported_format": "Непідтримуваний формат. Будь ласка, використовуйте .csv або .json.",
+        "file_corrupted": "Файл пошкоджено або містить некоректні дані"
+      },
+      "lesson_dialog": {
+        "add_title": "Додати заняття",
+        "label_day": "День:",
+        "label_subject": "Предмет:",
+        "label_start_time": "Час початку:",
+        "label_end_time": "Час закінчення:",
+        "label_type": "Тип:",
+        "label_room": "Аудиторія:",
+        "time_placeholder": "ГГ:ХХ напр. 09:00",
+        "subject_placeholder": "напр. математика",
+        "room_placeholder": "напр. A019",
+        "type_online": "Онлайн",
+        "type_offline": "Офлайн",
+        "save": "Зберегти",
+        "cancel": "Скасувати",
+        "label_color": "Обери колір:",
+        "validation_error": "Помилка валідації",
+        "error_time_required": "Будь ласка, вкажіть час початку та закінчення заняття",
+        "error_invalid_start_time": "Невірний формат часу початку. Використовуйте формат ГГ:ХХ (наприклад, 09:30)",
+        "error_invalid_end_time": "Невірний формат часу закінчення. Використовуйте формат ГГ:ХХ (наприклад, 11:20)",
+        "error_same_times": "Час початку та закінчення не можуть співпадати",
+        "error_end_before_start": "Час закінчення повинен бути пізніше часу початку",
+        "error_invalid_time_format": "Використовуйте формат HH:MM з ведучими нулями (наприклад, 09:00)",
+        "error_empty_subject": "Назва предмету не може бути пустою",
+        "delete": "Видалити",
+        "edit_title": "Редагувати заняття",
+        "added": "Заняття успішно додано",
+        "existing_lesson_error": "Урок на цей час уже існує",
+        "error_time_not_multiple_of_5": "Хвилини повинні бути кратними 5 (наприклад, 05, 10, 15 тощо)"
+      },
+      "days": {
+        "monday": "Понеділок",
+        "tuesday": "Вівторок",
+        "wednesday": "Середа",
+        "thursday": "Четвер",
+        "friday": "П'ятниця",
+        "saturday": "Субота",
+        "sunday": "Неділя"
+      },
+      "time_dialog": {
+        "title": "Оберіть час",
+        "save": "Зберегти",
+        "cancel": "Скасувати"
+      }
     }
-  }
 }

@@ -3,9 +3,10 @@ from PyQt6.QtWidgets import (
     QFrame, QVBoxLayout, QLabel, QScrollArea,
     QGridLayout, QWidget, QHBoxLayout, QSizePolicy
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from src.language import tr
 from src.signals import app_signals
+from src.ui.lesson_dialog import LessonDialog
 
 class GridBackground(QWidget):
     def __init__(self, time_slots: list, days: list,
@@ -68,6 +69,9 @@ class TimeColumn(QWidget):
                                  Qt.AlignmentFlag.AlignCenter, time_slot)
 
 class ScheduleView(QWidget):
+    # Signal to request lesson edit
+    lesson_edit_requested = pyqtSignal(object)
+
     # Create time slots for every 5 minutes from 01:00 to 23:55
     TIME_SLOTS = []
     for hour in range(0, 23):
@@ -75,14 +79,16 @@ class ScheduleView(QWidget):
             TIME_SLOTS.append(f"{hour:02d}:{minute:02d}")
 
     DAY_TRANSLATIONS = {
-        'en': ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
-        'uk': ["понеділок", "вівторок", "середа", "четвер", "п'ятниця", "субота", "неділя"],
-        'pl': ["poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]
+        'en': ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        'uk': ["понеділок", "вівторок", "середа", "четвер", "п'ятниця"],
+        'pl': ["poniedziałek", "wtorek", "środa", "czwartek", "piątek"]
     }
 
     def __init__(self, time_slot_height=20, day_header_width=100, min_day_width=210):  # Adjusted height
         super().__init__()
         app_signals.render_lessons.connect(self._render_lessons)
+        app_signals.lesson_updated.connect(self._handle_lesson_updated)
+        app_signals.lesson_deleted.connect(self._handle_lesson_deleted)
         self.time_slot_height = time_slot_height
         self.day_header_width = day_header_width
         self.min_day_width = min_day_width
@@ -98,9 +104,7 @@ class ScheduleView(QWidget):
             tr("app.days.tuesday"),
             tr("app.days.wednesday"),
             tr("app.days.thursday"),
-            tr("app.days.friday"),
-            tr("app.days.saturday"),
-            tr("app.days.sunday")
+            tr("app.days.friday")
         ]
 
     def _setup_ui(self):
@@ -177,6 +181,8 @@ class ScheduleView(QWidget):
                 if row_index is None:
                     continue
                 block = self._create_lesson_block(lesson)
+                # Connect block click to edit handler
+                block.lesson_clicked.connect(self._handle_lesson_block_clicked)
                 # Span rows based on duration
                 row_span = self._calculate_row_span(lesson.start_time, lesson.end_time)
                 self.grid_layout.addWidget(block, row_index, day_index, row_span, 1)
@@ -219,7 +225,6 @@ class ScheduleView(QWidget):
             return None
 
         try:
-            # Ensure time_str is in HH:MM format
             hour, minute = map(int, time_str.split(":"))
             time_str_formatted = f"{hour:02d}:{minute:02d}"
             return self.TIME_SLOTS.index(time_str_formatted)
@@ -231,11 +236,9 @@ class ScheduleView(QWidget):
         try:
             start_h, start_m = map(int, start_time.split(':'))
             end_h, end_m = map(int, end_time.split(':'))
-            # Calculate total minutes
             start_total = start_h * 60 + start_m
             end_total = end_h * 60 + end_m
             duration_minutes = end_total - start_total
-            # Convert to number of 5-minute slots
             row_span = max(1, duration_minutes // 5)
             return row_span
         except (ValueError, AttributeError):
@@ -244,13 +247,36 @@ class ScheduleView(QWidget):
     def _create_lesson_block(self, lesson):
         block = ScheduleBlock(lesson)
         block.setFixedWidth(self.min_day_width - 10)
+
         try:
             row_span = self._calculate_row_span(lesson.start_time, lesson.end_time)
-            block.setFixedHeight(row_span * self.time_slot_height)
+            min_height = row_span * self.time_slot_height
+            block.setMinimumHeight(max(30, min_height))
+            block.setMaximumHeight(min_height)
         except (ValueError, AttributeError):
-            block.setFixedHeight(self.time_slot_height)
+            block.setMinimumHeight(30)
+
         return block
 
+    def _handle_lesson_block_clicked(self, lesson):
+        """Відкриває діалог редагування для вибраного уроку."""
+        dialog = LessonDialog(lesson=lesson, edit_mode=True, parent=self)
+        dialog.exec()
+
+    def _handle_lesson_updated(self, lesson):
+        """Оновлює урок у списку та перемальовує розклад."""
+        for i, existing_lesson in enumerate(self.lessons):
+            if existing_lesson.id == lesson.id:
+                self.lessons[i] = lesson
+                break
+        else:
+            self.lessons.append(lesson)
+        self._render_lessons()
+
+    def _handle_lesson_deleted(self, lesson_id):
+        """Видаляє урок зі списку та перемальовує розклад."""
+        self.lessons = [lesson for lesson in self.lessons if lesson.id != lesson_id]
+        self._render_lessons()
 
 class ScheduleWidget(QWidget):
     def __init__(self):
@@ -291,7 +317,6 @@ class ScheduleWidget(QWidget):
         self.header_scroll_area.setWidget(self.header_frame)
         layout.addWidget(self.header_scroll_area)
 
-        # Schedule view
         self.schedule_view = ScheduleView()
         self.schedule_view.set_header_scroll_area(self.header_scroll_area)
         layout.addWidget(self.schedule_view)
@@ -303,16 +328,13 @@ class ScheduleWidget(QWidget):
             tr("app.days.tuesday"),
             tr("app.days.wednesday"),
             tr("app.days.thursday"),
-            tr("app.days.friday"),
-            tr("app.days.saturday"),
-            tr("app.days.sunday")
+            tr("app.days.friday")
         ]
 
     def set_lessons(self, lessons):
         self.schedule_view.set_lessons(lessons)
 
     def refresh_translation(self):
-        # Update day headers
         for i, day in enumerate(self.days):
             label = self.header_frame.layout().itemAt(i).widget()
             if isinstance(label, QLabel):
@@ -332,78 +354,118 @@ class ScrollSyncManager:
             header_scroll.horizontalScrollBar().valueChanged.connect(main_scroll.horizontalScrollBar().setValue)
 
 class ScheduleBlock(QFrame):
+    # Signal emitted when the block is clicked
+    lesson_clicked = pyqtSignal(object)
+
     def __init__(self, lesson):
         super().__init__()
         self.lesson = lesson
+        self.setMouseTracking(True)  # Enable mouse tracking for click events
         self._setup_ui()
 
     def _setup_ui(self) -> None:
-        # Height is set dynamically in ScheduleView, so no fixed height here
         self._apply_styles()
-
         layout = QVBoxLayout()
-        layout.setContentsMargins(8, 5, 8, 5)
-        layout.setSpacing(4)
-        layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align all content to the top
+        layout.setContentsMargins(5, 3, 5, 3)
+        layout.setSpacing(2)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Subject label
         subject_label = QLabel(self.lesson.subject)
         subject_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        subject_label.setWordWrap(True)
 
-        # Time label (start_time - end_time)
         time_text = self._format_time_text()
         time_label = QLabel(time_text)
         time_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
-        # Type and room labels
-        type_text = self._format_type_text()
-        room_text = self._format_room_text()
-        type_label = QLabel(type_text)
-        room_label = QLabel(room_text)
-        type_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-        room_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.labels = {
+            'subject': subject_label,
+            'time': time_label
+        }
 
-        # Get color from lesson
-        hex_color = self.lesson.color if hasattr(self.lesson, 'color') and self.lesson.color else "#3a3a3a"
-
-        # Apply styles with dynamic text color
-        subject_label.setStyleSheet(
-            f"font-weight: bold; font-size: 18px; color: {hex_color}; background-color: transparent;")
-        time_label.setStyleSheet(f"font-size: 12px; color: {hex_color}; background-color: transparent;")
-        type_label.setStyleSheet(f"font-size: 12px; color: {hex_color}; background-color: transparent;")
-        room_label.setStyleSheet(f"font-size: 12px; color: {hex_color}; background-color: transparent;")
-
-        # Add widgets to layout in the desired order
         layout.addWidget(subject_label)
         layout.addWidget(time_label)
-        layout.addWidget(type_label)
-        layout.addWidget(room_label)
-        layout.addStretch()  # Push labels to the top
 
+        self.block_layout = layout
         self.setLayout(layout)
 
+    def mousePressEvent(self, event):
+        """Обробляє клік на блоці уроку."""
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.lesson_clicked.emit(self.lesson)
+        super().mousePressEvent(event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._update_content_visibility()
+
+    def _update_content_visibility(self):
+        required_height = 100
+
+        if self.height() >= required_height:
+            if 'type' not in self.labels:
+                type_text = self._format_type_text()
+                if type_text:
+                    type_label = QLabel(type_text)
+                    type_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+                    self.labels['type'] = type_label
+                    self.block_layout.insertWidget(2, type_label)
+
+            if 'room' not in self.labels:
+                room_text = self._format_room_text()
+                if room_text:
+                    room_label = QLabel(room_text)
+                    room_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+                    self.labels['room'] = room_label
+                    self.block_layout.insertWidget(3, room_label)
+        else:
+            for key in ['type', 'room']:
+                if key in self.labels:
+                    self.labels[key].hide()
+                    self.block_layout.removeWidget(self.labels[key])
+                    self.labels[key].deleteLater()
+                    del self.labels[key]
+
+        self._apply_text_styles()
+
     def _apply_styles(self) -> None:
-        # Get the color from the lesson object or default to #3a3a3a
         hex_color = self.lesson.color if hasattr(self.lesson, 'color') and self.lesson.color else "#3a3a3a"
-
-        # Convert hex color to RGB for background with 50% opacity
-        def hex_to_rgb(hex_str):
-            hex_str = hex_str.lstrip('#')
-            return tuple(int(hex_str[i:i+2], 16) for i in (0, 2, 4))
-
-        rgb_color = hex_to_rgb(hex_color)
+        rgb_color = tuple(int(hex_color.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
         rgba_background = f"rgba({rgb_color[0]}, {rgb_color[1]}, {rgb_color[2]}, 0.1)"
 
-        # Apply styles with border and semi-transparent background
         self.setStyleSheet(f"""
             ScheduleBlock {{
                 background-color: {rgba_background};
-                border: 3px solid {hex_color};
-                border-radius: 6px;
-                margin: 4px;
-                padding: 8px;
+                border: 2px solid {hex_color};
+                border-radius: 4px;
+                margin: 2px;
+            }}
+            ScheduleBlock:hover {{
+                background-color: {rgba_background.replace('0.1', '0.2')};
             }}
         """)
+
+    def _apply_text_styles(self):
+        hex_color = self.lesson.color if hasattr(self.lesson, 'color') and self.lesson.color else "#3a3a3a"
+        base_font_size = max(8, min(14, self.height() // 5))
+
+        for label in self.labels.values():
+            if isinstance(label, QLabel):
+                font_size = base_font_size
+                if label is self.labels.get('subject'):
+                    font_size = min(16, base_font_size + 2)
+
+                label.setStyleSheet(f"""
+                    QLabel {{
+                        font-size: {font_size}px;
+                        color: {hex_color};
+                        background-color: transparent;
+                        margin: 0;
+                        padding: 0;
+                    }}
+                """)
+                if label is self.labels.get('subject'):
+                    label.setStyleSheet(label.styleSheet() + "font-weight: bold;")
 
     def _format_time_text(self) -> str:
         start_time = self.lesson.start_time if hasattr(self.lesson, 'start_time') and self.lesson.start_time else ""
