@@ -82,38 +82,15 @@ A feature-rich desktop application built with **PyQt6** for managing weekly sche
 
 ## Development
 
-### Running Tests
-
-The project includes unit tests written with **pytest**. To run the tests:
-
-```bash
-pytest tests/
-```
-
 ### Adding New Features
 
 - **UI Components**: Extend the `ui/` directory with new widgets or dialogs, utilizing PyQt6 signals for event handling.
 - **Translations**: Add new JSON files to `translations/` for additional languages, following the existing format.
 - **Database**: Modify `models/` to extend SQLite 3 schema or add new CRUD operations.
-- **Testing**: Add corresponding tests in the `tests/` directory to maintain code reliability.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m 'Add your feature'`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a pull request.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For questions or feedback, feel free to reach out via [GitHub Issues](https://github.com/your-username/schedule-app/issues) or contact me at [your-email@example.com].
 
 ---
 
